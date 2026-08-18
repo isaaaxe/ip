@@ -34,7 +34,7 @@ public class Apollo {
                     task.markAsDone();
                     printMarkChanges(task.isDone);
                     printTask(task);
-                } catch (Error e) {
+                } catch (Exception e) {
                     printErrorMessage();
                 }
                  
@@ -45,7 +45,7 @@ public class Apollo {
                     task.markAsUndone();     
                     printMarkChanges(task.isDone);
                     printTask(task);
-                } catch (Error e) {
+                } catch (Exception e) {
                     printErrorMessage();
                 }
             } else {
