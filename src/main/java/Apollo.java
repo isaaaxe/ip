@@ -23,7 +23,7 @@ public class Apollo {
                 validSession = false;
             } else if (command.equals("list")) {
                 for (int i = 0; i < listCount; i++) {
-                    System.out.println(String.format("%d. %s", i, record[i]));
+                    System.out.println(String.format("%d. %s", i + 1, record[i]));
                 }
             } else {
                 record[listCount] = command;
@@ -42,6 +42,6 @@ public class Apollo {
         System.out.println("=======================================================================");
     } 
     public static void printCommand(String command) {
-        System.out.println("    added " + command);
+        System.out.println("    added: " + command);
     }
 }
