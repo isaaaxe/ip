@@ -4,7 +4,9 @@ public class Apollo {
     final static String greeting = "Greetings young mortal! Apollo here to answer any queries under the sun!";
     final static String exit = "To the end of the west wind, where fresh flowers bloom.";
     static boolean validSession = true;
+    static String[] record  = new String[100];
     static Scanner scanner;
+    static int listCount = 0;
 
     public static void main(String[] args) {
         //new scanner object
@@ -16,11 +18,19 @@ public class Apollo {
         while (validSession) {
             printBarrier();
             String command = scanner.nextLine();
+            //command switch case
             if (command.equals("bye")) {
                 validSession = false;
+            } else if (command.equals("list")) {
+                for (int i = 0; i < listCount; i++) {
+                    System.out.println(String.format("%d. %s", i, record[i]));
+                }
             } else {
+                record[listCount] = command;
+                listCount += 1;
                 printCommand(command);
             }
+
         }
         printBarrier();
 
@@ -32,6 +42,6 @@ public class Apollo {
         System.out.println("=======================================================================");
     } 
     public static void printCommand(String command) {
-        System.out.println("    " + command);
+        System.out.println("    added " + command);
     }
 }
