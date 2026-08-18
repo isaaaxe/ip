@@ -1,11 +1,16 @@
 import java.util.Scanner;
 
 public class Apollo {
+    final static String greeting = "Greetings young mortal! Apollo here to answer any queries under the sun!";
+    final static String exit = "To the end of the west wind, where fresh flowers bloom.";
+    static boolean validSession = true;
+    static Scanner scanner;
+
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        String greeting = "Greetings young mortal! Apollo here to answer any queries under the sun!";
-        String exit = "To the end of the west wind, where fresh flowers bloom.";
-        boolean validSession = true;
+        //new scanner object
+        scanner = new Scanner(System.in);
+
+        //main process
         printBarrier();
         System.out.println(greeting);
         while (validSession) {
