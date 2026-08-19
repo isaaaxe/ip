@@ -11,11 +11,8 @@ public abstract class Task {
         return this.isDone ? "X" : " ";
     }
 
-    public void markAsDone() {
-        this.isDone = true;
-    }
-    public void markAsUndone() {
-        this.isDone = false;
+    public void markAsDone(boolean bool) {
+        this.isDone = bool;
     }
 
     public abstract String getIcon();
