@@ -7,6 +7,16 @@ public class Apollo {
     static Task[] record  = new Task[100];
     static Scanner scanner;
     static int listCount = 0;
+    static enum Command {
+        LIST,
+        MARK,
+        UNMARK,
+        DELETE,
+        TODO,
+        EVENT,
+        DEADLINE,
+        BYE
+    };
 
     public static void main(String[] args) {
         //new scanner object
@@ -16,56 +26,91 @@ public class Apollo {
         printBarrier();
         System.out.println(greeting);
         while (validSession) {
-            printBarrier();
-            String fullCommand = scanner.nextLine();
-            String[] commandArgs = fullCommand.trim().split(" ");
+            printSeparator();
+            String input = scanner.nextLine();
+            String[] inputArgs = input.trim().split(" ");
+
+
+            Command command = Command.valueOf(inputArgs[0].trim().toUpperCase());
             //command switch case
-            if (commandArgs[0].equals("bye")) {
-                validSession = false;
-            } else if (commandArgs[0].equals("list")) {
-                for (int i = 0; i < listCount; i++) {
-                    System.out.print(String.format("%d. ", i+1));
-                    printTask(record[i]);
-                }
-            } else if (commandArgs[0].equals("mark")) {
-                try {
-                    int index = Integer.parseInt(commandArgs[1]) - 1;
-                    Task task = record[index];
-                    task.markAsDone();
-                    printMarkChanges(task.isDone);
-                    printTask(task);
-                } catch (Exception e) {
-                    printErrorMessage();
-                }
-                 
-            } else if (commandArgs[0].equals("unmark")) { 
-                try {
-                    int index = Integer.parseInt(commandArgs[1]) - 1;
-                    Task task = record[index];
-                    task.markAsUndone();     
-                    printMarkChanges(task.isDone);
-                    printTask(task);
-                } catch (Exception e) {
-                    printErrorMessage();
-                }
-            } else {
-                record[listCount] = new Task(fullCommand);
-                listCount += 1;
-                printCommand(fullCommand);
+            switch (command) {
+                case BYE:
+
+                    break;
+                case LIST:
+                    
+                    break;
+                case MARK:
+
+                    break;
+                case UNMARK:
+
+                    break;
+                case TODO:
+
+                    break;
+                case EVENT:
+
+                    break;
+                case DEADLINE:
+
+                    break;
+                case DELETE:
+                    //not implemented yet
+                    break;
             }
+            printSeparator();
+
+            // if (commandArgs[0].equals("bye")) {
+            //     validSession = false;
+            // } else if (commandArgs[0].equals("list")) {
+            //     for (int i = 0; i < listCount; i++) {
+            //         System.out.print(String.format("%d. ", i+1));
+            //         printTask(record[i]);
+            //     }
+            // } else if (commandArgs[0].equals("mark")) {
+            //     try {
+            //         int index = Integer.parseInt(commandArgs[1]) - 1;
+            //         Task task = record[index];
+            //         task.markAsDone();
+            //         printMarkChanges(task.isDone);
+            //         printTask(task);
+            //     } catch (Exception e) {
+            //         printErrorMessage();
+            //     }
+                 
+            // } else if (commandArgs[0].equals("unmark")) { 
+            //     try {
+            //         int index = Integer.parseInt(commandArgs[1]) - 1;
+            //         Task task = record[index];
+            //         task.markAsUndone();     
+            //         printMarkChanges(task.isDone);
+            //         printTask(task);
+            //     } catch (Exception e) {
+            //         printErrorMessage();
+            //     }
+            // } else {
+            //     record[listCount] = new Task(fullCommand);
+            //     listCount += 1;
+            //     printCommand(fullCommand);
+            // }
 
         }
-        printBarrier();
-
         System.out.println(exit);
+        printBarrier();
         scanner.close();
     }
 
     public static void printBarrier() {
         System.out.println("=======================================================================");
     } 
-    public static void printCommand(String command) {
-        System.out.println("    added: " + command);
+
+    public static void printSeparator() {
+        System.out.println("-----------------------------------------------------------------------");
+    }
+
+    public static void printCommand(Task task) {
+        System.out.println("    added: " + task);
     }
 
     public static void printTask(Task task) {
@@ -79,4 +124,36 @@ public class Apollo {
     public static void printMarkChanges(boolean isMarked) {
         System.out.println(String.format("Your prayers are heard child, I have %s the specified task:", isMarked ? "marked" : "unmarked"));
     } 
+
+    //Apollo Command functions
+    
+    //list: directly prints the wanted output
+    public static void printList() {
+        for (int i = 0; i < listCount; i++) {
+            System.out.println(String.format("%d. %s", i+1, record[i].toString()));
+        }
+    }
+
+    //add task
+    public static void addTask(Task task) {
+        record[listCount] = task;
+        listCount += 1;
+    }
+
+    //mark
+    public static void markAsDone(int index) {
+        Task currTask = record[index];
+        currTask.markAsDone();
+    }
+
+    //unmark
+    public static void markAsUndone(int index) {
+        Task currTask = record[index];
+        currTask.markAsUndone();
+    }
+
+    //delete
+    public static void deleteTask(int index) {
+        //not implemented yet
+    }
 }
