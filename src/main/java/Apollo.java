@@ -26,34 +26,53 @@ public class Apollo {
         printBarrier();
         System.out.println(greeting);
         while (validSession) {
-            printSeparator();
+            
             String input = scanner.nextLine();
             String[] inputArgs = input.trim().split(" ");
-
+            printSeparator();
 
             Command command = Command.valueOf(inputArgs[0].trim().toUpperCase());
             //command switch case
             switch (command) {
                 case BYE:
-
+                    validSession = false;
                     break;
                 case LIST:
-                    
+                    printList();
                     break;
                 case MARK:
-
+                    int indexMark = Integer.parseInt(inputArgs[1]) - 1;
+                    markAsDone(indexMark);
                     break;
                 case UNMARK:
-
+                    int indexUnmark = Integer.parseInt(inputArgs[1]) - 1;
+                    markAsUndone(indexUnmark);
                     break;
                 case TODO:
-
+                    String todoDescription = input.substring("todo".length()).trim();
+                    Todo todo = new Todo(todoDescription);
+                    addTask(todo);
                     break;
                 case EVENT:
+                    String eventArgs = input.substring("event".length()).trim();
+                    int fromIndex = eventArgs.indexOf("/from");
+                    int toIndex = eventArgs.indexOf("/to");
+
+                    String eventDescription = eventArgs.substring(0, fromIndex);
+                    String fromString = eventArgs.substring(fromIndex + "/from".length(), toIndex);
+                    String toString = eventArgs.substring(toIndex + "/to".length());
+                    Event event = new Event(eventDescription, fromString, toString);
+                    addTask(event);
 
                     break;
                 case DEADLINE:
+                    String deadlineArgs = input.substring("deadline".length()).trim();
+                    int deadlineIndex = deadlineArgs.indexOf("/by");
 
+                    String deadlineDescription = deadlineArgs.substring(0, deadlineIndex);
+                    String deadlineString = deadlineArgs.substring(deadlineIndex + "/by".length());
+                    Deadline deadline  = new Deadline(deadlineDescription, deadlineString);
+                    addTask(deadline);
                     break;
                 case DELETE:
                     //not implemented yet
@@ -109,28 +128,26 @@ public class Apollo {
         System.out.println("-----------------------------------------------------------------------");
     }
 
-    public static void printCommand(Task task) {
-        System.out.println("    added: " + task);
-    }
-
-    public static void printTask(Task task) {
-        System.out.println(String.format("[%s] %s",task.getStatusIcon(), task.description));
-    }
-
     public static void printErrorMessage() {
         System.out.println("Invalid command passed, please try again.");
     }
 
-    public static void printMarkChanges(boolean isMarked) {
-        System.out.println(String.format("Your prayers are heard child, I have %s the specified task:", isMarked ? "marked" : "unmarked"));
-    } 
+    public static void printMarkChanges(Task task) {
+        System.out.println(String.format("Your prayers are heard child, I have %s the specified task:", task.isDone ? "marked" : "unmarked"));
+        System.out.println(task);
+    }
+
+    public static void printAddedTask(Task task) {
+        System.out.println("Understood child, adding to your task list:");
+        System.out.println(task);
+    }
 
     //Apollo Command functions
     
     //list: directly prints the wanted output
     public static void printList() {
         for (int i = 0; i < listCount; i++) {
-            System.out.println(String.format("%d. %s", i+1, record[i].toString()));
+            System.out.println(String.format("%d. %s", i+1, record[i]));
         }
     }
 
@@ -138,18 +155,21 @@ public class Apollo {
     public static void addTask(Task task) {
         record[listCount] = task;
         listCount += 1;
+        printAddedTask(task);
     }
 
     //mark
     public static void markAsDone(int index) {
         Task currTask = record[index];
-        currTask.markAsDone();
+        currTask.markAsDone(true);
+        printMarkChanges(currTask);
     }
 
     //unmark
     public static void markAsUndone(int index) {
         Task currTask = record[index];
-        currTask.markAsUndone();
+        currTask.markAsDone(false);
+        printMarkChanges(currTask);
     }
 
     //delete
