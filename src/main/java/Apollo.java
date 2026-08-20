@@ -1,10 +1,11 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Apollo {
     final static String greeting = "Greetings young mortal! Apollo here to answer any queries under the sun!";
     final static String exit = "To the end of the west wind, where fresh flowers bloom.";
     static boolean validSession = true;
-    static Task[] record  = new Task[100];
+    static ArrayList<Task> record  = new ArrayList<Task>();
     static Scanner scanner;
     static int listCount = 0;
     static enum Command {
@@ -136,33 +137,39 @@ public class Apollo {
         System.out.println(task);
     }
 
+    public static void printDeleteTask(Task task) {
+        System.out.println("Understood young one, I have removed this task:");
+        System.out.println(task);
+        System.out.println(String.format("You now have %d tasks left.", record.size()));
+
+    }
+
     //Apollo Command functions
     
     //list: directly prints the wanted output
     public static void printList() {
         System.out.println("Here are your current tasks child: ");
-        for (int i = 0; i < listCount; i++) {
-            System.out.println(String.format("%d. %s", i+1, record[i]));
+        for (int i = 0; i < record.size(); i++) {
+            System.out.println(String.format("%d. %s", i+1, record.get(i)));
         }
     }
 
     //add task
     public static void addTask(Task task) {
-        record[listCount] = task;
-        listCount += 1;
+        record.add(task);
         printAddedTask(task);
     }
 
     //mark
     public static void markAsDone(int index) {
-        Task currTask = record[index];
+        Task currTask = record.get(index);
         currTask.markAsDone(true);
         printMarkChanges(currTask);
     }
 
     //unmark
     public static void markAsUndone(int index) {
-        Task currTask = record[index];
+        Task currTask = record.get(index);
         currTask.markAsDone(false);
         printMarkChanges(currTask);
     }
