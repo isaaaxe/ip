@@ -101,7 +101,12 @@ public class Apollo {
                         }
                         break;
                     case DELETE:
-                        //not implemented yet
+                        try {
+                            int indexDelete = Integer.parseInt(inputArgs[1]) - 1;
+                            deleteTask(indexDelete);
+                        } catch (Exception e) {
+                            System.out.println("Give a valid index mortal");
+                        }
                         break;
             }
         } catch (Exception e) {
@@ -176,6 +181,7 @@ public class Apollo {
 
     //delete
     public static void deleteTask(int index) {
-        //not implemented yet
+        Task deleteTask = record.remove(index);
+        printDeleteTask(deleteTask);
     }
 }
