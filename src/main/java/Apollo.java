@@ -1,5 +1,9 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.List;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Apollo {
     final static String greeting = "Greetings young mortal! Apollo here to answer any queries under the sun!";
@@ -20,6 +24,10 @@ public class Apollo {
     };
 
     public static void main(String[] args) {
+
+        //load the apollo.txt task list to record
+        loadTasks();
+
         //new scanner object
         scanner = new Scanner(System.in);
 
@@ -81,7 +89,7 @@ public class Apollo {
                             String eventDescription = eventArgs.substring(0, fromIndex);
                             String fromString = eventArgs.substring(fromIndex + "/from".length(), toIndex);
                             String toString = eventArgs.substring(toIndex + "/to".length());
-                            Event event = new Event(eventDescription, fromString, toString);
+                            Event event = new Event(eventDescription.trim(), fromString.trim(), toString.trim());
                             addTask(event);
                         } catch (Exception e) {
                             System.out.println("Give me good arguments mortal!");
@@ -94,7 +102,7 @@ public class Apollo {
 
                             String deadlineDescription = deadlineArgs.substring(0, deadlineIndex);
                             String deadlineString = deadlineArgs.substring(deadlineIndex + "/by".length());
-                            Deadline deadline  = new Deadline(deadlineDescription, deadlineString);
+                            Deadline deadline  = new Deadline(deadlineDescription.trim(), deadlineString.trim());
                             addTask(deadline);
                         } catch (Exception e) {
                             System.out.println("Give me good arguments mortal!");
@@ -118,6 +126,7 @@ public class Apollo {
         System.out.println(exit);
         printBarrier();
         scanner.close();
+        saveTasks();
     }
 
     public static void printBarrier() {
@@ -148,6 +157,74 @@ public class Apollo {
         System.out.println(String.format("You now have %d tasks left.", record.size()));
 
     }
+
+    //Apollo save/load info
+    public static void saveTasks() {
+        Path folder = Path.of("data");
+        Path file = folder.resolve("apollo.txt");
+
+        try {
+            Files.createDirectories(folder);
+            List<String> lines = new ArrayList<>();
+
+            for (Task task : record) {
+                lines.add(task.toFileString());
+            }
+
+            Files.write(file, lines);
+
+        } catch (IOException e) {
+            System.out.println("Could not save tasks.");
+        }
+    }
+
+    public static void loadTasks() {
+        Path file = Path.of("data", "apollo.txt");
+
+        if (!Files.exists(file)) {
+            return;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(file);
+
+            for (String line : lines) {
+                String[] parts = line.split("\\s*\\|\\s*");
+
+                String type = parts[0];
+                boolean isDone = parts[1].equals("1");
+                String description = parts[2];
+
+                Task task = null;
+
+                switch (type) {
+                case "T":
+                    task = new Todo(description);
+                    break;
+
+                case "D":
+                    task = new Deadline(description, parts[3]);
+                    break;
+
+                case "E":
+                    task = new Event(description, parts[3], parts[4]);
+                    break;
+
+                default:
+                    break;
+                }
+
+                if (task != null) {
+                        task.markAsDone(isDone);
+                    record.add(task);
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error loading tasks: " + e.getMessage());
+        }
+    }
+
 
     //Apollo Command functions
     

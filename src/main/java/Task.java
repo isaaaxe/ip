@@ -17,4 +17,5 @@ public abstract class Task {
 
     public abstract String getIcon();
     public abstract String toString();
+    public abstract String toFileString();
 }
