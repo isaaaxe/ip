@@ -4,6 +4,7 @@ import java.util.List;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +25,9 @@ public class Apollo {
         TODO,
         EVENT,
         DEADLINE,
+        DUETODAY,
+        ONGOINGNOW,
+        DUETHISDATE,
         BYE
     };
 
@@ -120,6 +124,20 @@ public class Apollo {
                             System.out.println("Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!");
                         } catch (Exception e) {
                             System.out.println("Give me good arguments mortal!");
+                        }
+                        break;
+                    case DUETODAY:
+                        dueToday();
+                        break;
+                    case ONGOINGNOW:
+                        ongoingNow();
+                        break;
+                    case DUETHISDATE:
+                        try {
+                            String dateString = input.substring("dueThisDate".length()).trim();
+                            dueThisDate(DateParser.parseDate(dateString));
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Use a date in d/M/yyyy format, mortal!");
                         }
                         break;
                     case DELETE:
@@ -277,5 +295,57 @@ public class Apollo {
     public static void deleteTask(int index) {
         Task deleteTask = record.remove(index);
         printDeleteTask(deleteTask);
+    }
+
+    /** Shows all deadlines due on the current date. */
+    public static void dueToday() {
+        dueThisDate(LocalDate.now());
+    }
+
+    /** Shows all events whose time range includes the current time. */
+    public static void ongoingNow() {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("Here are your ongoing events, child:");
+        int count = 0;
+
+        for (Task task : record) {
+            if (task instanceof Event) {
+                Event event = (Event) task;
+                boolean hasStarted = !now.isBefore(event.getFrom());
+                boolean hasNotEnded = !now.isAfter(event.getTo());
+                if (hasStarted && hasNotEnded) {
+                    count++;
+                    System.out.println(String.format("%d. %s", count, event));
+                }
+            }
+        }
+
+        if (count == 0) {
+            System.out.println("You have no ongoing events.");
+        }
+    }
+
+    /**
+     * Shows all deadlines due on the supplied date.
+     *
+     * @param date date for which deadlines should be shown
+     */
+    public static void dueThisDate(LocalDate date) {
+        System.out.println(String.format("Here are your deadlines due on %s, child:", date));
+        int count = 0;
+
+        for (Task task : record) {
+            if (task instanceof Deadline) {
+                Deadline deadline = (Deadline) task;
+                if (deadline.getBy().toLocalDate().equals(date)) {
+                    count++;
+                    System.out.println(String.format("%d. %s", count, deadline));
+                }
+            }
+        }
+
+        if (count == 0) {
+            System.out.println("You have no deadlines due on this date.");
+        }
     }
 }
