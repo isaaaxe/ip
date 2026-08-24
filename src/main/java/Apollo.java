@@ -4,6 +4,11 @@ import java.util.List;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Apollo {
     final static String greeting = "Greetings young mortal! Apollo here to answer any queries under the sun!";
@@ -20,6 +25,9 @@ public class Apollo {
         TODO,
         EVENT,
         DEADLINE,
+        DUETODAY,
+        ONGOINGNOW,
+        DUETHISDATE,
         BYE
     };
 
@@ -89,8 +97,15 @@ public class Apollo {
                             String eventDescription = eventArgs.substring(0, fromIndex);
                             String fromString = eventArgs.substring(fromIndex + "/from".length(), toIndex);
                             String toString = eventArgs.substring(toIndex + "/to".length());
-                            Event event = new Event(eventDescription.trim(), fromString.trim(), toString.trim());
+                            LocalDateTime from = DateParser.parseDateTime(fromString.trim(), LocalTime.MIDNIGHT);
+                            LocalDateTime to = DateParser.parseDateTime(toString.trim(), LocalTime.of(23, 59));
+                            if (to.isBefore(from)) {
+                                throw new IllegalArgumentException("Event end cannot be before its start");
+                            }
+                            Event event = new Event(eventDescription.trim(), from, to);
                             addTask(event);
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!");
                         } catch (Exception e) {
                             System.out.println("Give me good arguments mortal!");
                         }
@@ -102,10 +117,27 @@ public class Apollo {
 
                             String deadlineDescription = deadlineArgs.substring(0, deadlineIndex);
                             String deadlineString = deadlineArgs.substring(deadlineIndex + "/by".length());
-                            Deadline deadline  = new Deadline(deadlineDescription.trim(), deadlineString.trim());
+                            LocalDateTime by = DateParser.parseDateTime(deadlineString.trim(), LocalTime.of(23, 59));
+                            Deadline deadline = new Deadline(deadlineDescription.trim(), by);
                             addTask(deadline);
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!");
                         } catch (Exception e) {
                             System.out.println("Give me good arguments mortal!");
+                        }
+                        break;
+                    case DUETODAY:
+                        dueToday();
+                        break;
+                    case ONGOINGNOW:
+                        ongoingNow();
+                        break;
+                    case DUETHISDATE:
+                        try {
+                            String dateString = input.substring("dueThisDate".length()).trim();
+                            dueThisDate(DateParser.parseDate(dateString));
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Use a date in d/M/yyyy format, mortal!");
                         }
                         break;
                     case DELETE:
@@ -203,11 +235,14 @@ public class Apollo {
                     break;
 
                 case "D":
-                    task = new Deadline(description, parts[3]);
+                    task = new Deadline(description,
+                            LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     break;
 
                 case "E":
-                    task = new Event(description, parts[3], parts[4]);
+                    task = new Event(description,
+                            LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            LocalDateTime.parse(parts[4], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
                     break;
 
                 default:
@@ -260,5 +295,57 @@ public class Apollo {
     public static void deleteTask(int index) {
         Task deleteTask = record.remove(index);
         printDeleteTask(deleteTask);
+    }
+
+    /** Shows all deadlines due on the current date. */
+    public static void dueToday() {
+        dueThisDate(LocalDate.now());
+    }
+
+    /** Shows all events whose time range includes the current time. */
+    public static void ongoingNow() {
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println("Here are your ongoing events, child:");
+        int count = 0;
+
+        for (Task task : record) {
+            if (task instanceof Event) {
+                Event event = (Event) task;
+                boolean hasStarted = !now.isBefore(event.getFrom());
+                boolean hasNotEnded = !now.isAfter(event.getTo());
+                if (hasStarted && hasNotEnded) {
+                    count++;
+                    System.out.println(String.format("%d. %s", count, event));
+                }
+            }
+        }
+
+        if (count == 0) {
+            System.out.println("You have no ongoing events.");
+        }
+    }
+
+    /**
+     * Shows all deadlines due on the supplied date.
+     *
+     * @param date date for which deadlines should be shown
+     */
+    public static void dueThisDate(LocalDate date) {
+        System.out.println(String.format("Here are your deadlines due on %s, child:", date));
+        int count = 0;
+
+        for (Task task : record) {
+            if (task instanceof Deadline) {
+                Deadline deadline = (Deadline) task;
+                if (deadline.getBy().toLocalDate().equals(date)) {
+                    count++;
+                    System.out.println(String.format("%d. %s", count, deadline));
+                }
+            }
+        }
+
+        if (count == 0) {
+            System.out.println("You have no deadlines due on this date.");
+        }
     }
 }
