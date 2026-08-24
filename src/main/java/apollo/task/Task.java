@@ -16,6 +16,10 @@ public abstract class Task {
         this.isDone = bool;
     }
 
+    public boolean getIsDone() {
+        return this.isDone;
+    }
+
     public abstract String getIcon();
     public abstract String toString();
     public abstract String toFileString();
