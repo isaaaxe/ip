@@ -14,7 +14,7 @@ public class Apollo {
     final static String greeting = "Greetings young mortal! Apollo here to answer any queries under the sun!";
     final static String exit = "To the end of the west wind, where fresh flowers bloom.";
     static boolean validSession = true;
-    static ArrayList<Task> record  = new ArrayList<Task>();
+    static TaskList tasks = new TaskList();
     static Scanner scanner;
     static int listCount = 0;
     static enum Command {
@@ -186,7 +186,7 @@ public class Apollo {
     public static void printDeleteTask(Task task) {
         System.out.println("Understood young one, I have removed this task:");
         System.out.println(task);
-        System.out.println(String.format("You now have %d tasks left.", record.size()));
+        System.out.println(String.format("You now have %d tasks left.", tasks.size()));
 
     }
 
@@ -199,7 +199,7 @@ public class Apollo {
             Files.createDirectories(folder);
             List<String> lines = new ArrayList<>();
 
-            for (Task task : record) {
+            for (Task task : tasks.getTasks()) {
                 lines.add(task.toFileString());
             }
 
@@ -251,7 +251,7 @@ public class Apollo {
 
                 if (task != null) {
                         task.markAsDone(isDone);
-                    record.add(task);
+                    tasks.add(task);
                 }
             }
 
@@ -266,34 +266,34 @@ public class Apollo {
     //list: directly prints the wanted output
     public static void printList() {
         System.out.println("Here are your current tasks child: ");
-        for (int i = 0; i < record.size(); i++) {
-            System.out.println(String.format("%d. %s", i+1, record.get(i)));
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(String.format("%d. %s", i+1, tasks.get(i)));
         }
     }
 
     //add task
     public static void addTask(Task task) {
-        record.add(task);
+        tasks.add(task);
         printAddedTask(task);
     }
 
     //mark
     public static void markAsDone(int index) {
-        Task currTask = record.get(index);
+        Task currTask = tasks.get(index);
         currTask.markAsDone(true);
         printMarkChanges(currTask);
     }
 
     //unmark
     public static void markAsUndone(int index) {
-        Task currTask = record.get(index);
+        Task currTask = tasks.get(index);
         currTask.markAsDone(false);
         printMarkChanges(currTask);
     }
 
     //delete
     public static void deleteTask(int index) {
-        Task deleteTask = record.remove(index);
+        Task deleteTask = tasks.delete(index);
         printDeleteTask(deleteTask);
     }
 
@@ -306,21 +306,12 @@ public class Apollo {
     public static void ongoingNow() {
         LocalDateTime now = LocalDateTime.now();
         System.out.println("Here are your ongoing events, child:");
-        int count = 0;
-
-        for (Task task : record) {
-            if (task instanceof Event) {
-                Event event = (Event) task;
-                boolean hasStarted = !now.isBefore(event.getFrom());
-                boolean hasNotEnded = !now.isAfter(event.getTo());
-                if (hasStarted && hasNotEnded) {
-                    count++;
-                    System.out.println(String.format("%d. %s", count, event));
-                }
-            }
+        List<Event> ongoingEvents = tasks.getEventsOngoingAt(now);
+        for (int i = 0; i < ongoingEvents.size(); i++) {
+            System.out.println(String.format("%d. %s", i + 1, ongoingEvents.get(i)));
         }
 
-        if (count == 0) {
+        if (ongoingEvents.isEmpty()) {
             System.out.println("You have no ongoing events.");
         }
     }
@@ -332,19 +323,12 @@ public class Apollo {
      */
     public static void dueThisDate(LocalDate date) {
         System.out.println(String.format("Here are your deadlines due on %s, child:", date));
-        int count = 0;
-
-        for (Task task : record) {
-            if (task instanceof Deadline) {
-                Deadline deadline = (Deadline) task;
-                if (deadline.getBy().toLocalDate().equals(date)) {
-                    count++;
-                    System.out.println(String.format("%d. %s", count, deadline));
-                }
-            }
+        List<Deadline> dueDeadlines = tasks.getDeadlinesDueOn(date);
+        for (int i = 0; i < dueDeadlines.size(); i++) {
+            System.out.println(String.format("%d. %s", i + 1, dueDeadlines.get(i)));
         }
 
-        if (count == 0) {
+        if (dueDeadlines.isEmpty()) {
             System.out.println("You have no deadlines due on this date.");
         }
     }
