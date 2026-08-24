@@ -31,4 +31,15 @@ public final class DateParser {
             return date.atTime(defaultTime);
         }
     }
+
+    /**
+     * Parses a date without a time component.
+     *
+     * @param input date text in {@code d/M/yyyy} format
+     * @return the parsed date
+     * @throws DateTimeParseException if the input is not a valid date
+     */
+    public static LocalDate parseDate(String input) {
+        return LocalDate.parse(input, DATE_FORMATTER);
+    }
 }
