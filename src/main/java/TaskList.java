@@ -12,6 +12,11 @@ public class TaskList {
         this.tasks = new ArrayList<>();
     }
 
+    /** Creates a task list containing the supplied tasks. */
+    public TaskList(List<Task> tasks) {
+        this.tasks = new ArrayList<>(tasks);
+    }
+
     /** Adds a task to the list. */
     public void add(Task task) {
         this.tasks.add(task);

@@ -1,13 +1,9 @@
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class Apollo {
@@ -15,6 +11,7 @@ public class Apollo {
     final static String exit = "To the end of the west wind, where fresh flowers bloom.";
     static boolean validSession = true;
     static TaskList tasks = new TaskList();
+    static Storage storage = new Storage("data/apollo.txt");
     static Scanner scanner;
     static int listCount = 0;
     static enum Command {
@@ -190,71 +187,18 @@ public class Apollo {
 
     }
 
-    //Apollo save/load info
+    // Apollo save/load info
     public static void saveTasks() {
-        Path folder = Path.of("data");
-        Path file = folder.resolve("apollo.txt");
-
         try {
-            Files.createDirectories(folder);
-            List<String> lines = new ArrayList<>();
-
-            for (Task task : tasks.getTasks()) {
-                lines.add(task.toFileString());
-            }
-
-            Files.write(file, lines);
-
+            storage.save(tasks.getTasks());
         } catch (IOException e) {
             System.out.println("Could not save tasks.");
         }
     }
 
     public static void loadTasks() {
-        Path file = Path.of("data", "apollo.txt");
-
-        if (!Files.exists(file)) {
-            return;
-        }
-
         try {
-            List<String> lines = Files.readAllLines(file);
-
-            for (String line : lines) {
-                String[] parts = line.split("\\s*\\|\\s*");
-
-                String type = parts[0];
-                boolean isDone = parts[1].equals("1");
-                String description = parts[2];
-
-                Task task = null;
-
-                switch (type) {
-                case "T":
-                    task = new Todo(description);
-                    break;
-
-                case "D":
-                    task = new Deadline(description,
-                            LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                    break;
-
-                case "E":
-                    task = new Event(description,
-                            LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            LocalDateTime.parse(parts[4], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                    break;
-
-                default:
-                    break;
-                }
-
-                if (task != null) {
-                        task.markAsDone(isDone);
-                    tasks.add(task);
-                }
-            }
-
+            tasks = new TaskList(storage.load());
         } catch (IOException e) {
             System.out.println("Error loading tasks: " + e.getMessage());
         }
