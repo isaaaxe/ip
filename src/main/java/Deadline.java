@@ -18,6 +18,11 @@ public class Deadline extends Task {
         return "D";
     }
 
+    /** Returns the date and time by which this task is due. */
+    public LocalDateTime getBy() {
+        return this.by;
+    }
+
     @Override
     public String toString() {
         return String.format("[%s] [%s] %s (by: %s)", this.getIcon(), this.getStatusIcon(),

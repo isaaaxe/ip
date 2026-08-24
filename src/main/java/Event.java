@@ -20,6 +20,16 @@ public class Event extends Task {
         return "E";
     }
 
+    /** Returns the date and time when this event starts. */
+    public LocalDateTime getFrom() {
+        return this.from;
+    }
+
+    /** Returns the date and time when this event ends. */
+    public LocalDateTime getTo() {
+        return this.to;
+    }
+
     @Override
     public String toString() {
         return String.format("[%s] [%s] %s (from: %s to: %s)", this.getIcon(), this.getStatusIcon(),
