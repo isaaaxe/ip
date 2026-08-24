@@ -89,7 +89,7 @@ public class Apollo {
                             String eventDescription = eventArgs.substring(0, fromIndex);
                             String fromString = eventArgs.substring(fromIndex + "/from".length(), toIndex);
                             String toString = eventArgs.substring(toIndex + "/to".length());
-                            Event event = new Event(eventDescription, fromString, toString);
+                            Event event = new Event(eventDescription.trim(), fromString.trim(), toString.trim());
                             addTask(event);
                         } catch (Exception e) {
                             System.out.println("Give me good arguments mortal!");
@@ -102,7 +102,7 @@ public class Apollo {
 
                             String deadlineDescription = deadlineArgs.substring(0, deadlineIndex);
                             String deadlineString = deadlineArgs.substring(deadlineIndex + "/by".length());
-                            Deadline deadline  = new Deadline(deadlineDescription, deadlineString);
+                            Deadline deadline  = new Deadline(deadlineDescription.trim(), deadlineString.trim());
                             addTask(deadline);
                         } catch (Exception e) {
                             System.out.println("Give me good arguments mortal!");
