@@ -3,7 +3,6 @@ import java.util.List;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 
 public class Apollo {
@@ -12,21 +11,9 @@ public class Apollo {
     static boolean validSession = true;
     static TaskList tasks = new TaskList();
     static Storage storage = new Storage("data/apollo.txt");
+    static Parser parser = new Parser();
     static Scanner scanner;
     static int listCount = 0;
-    static enum Command {
-        LIST,
-        MARK,
-        UNMARK,
-        DELETE,
-        TODO,
-        EVENT,
-        DEADLINE,
-        DUETODAY,
-        ONGOINGNOW,
-        DUETHISDATE,
-        BYE
-    };
 
     public static void main(String[] args) {
 
@@ -42,13 +29,12 @@ public class Apollo {
         while (validSession) {
             
             String input = scanner.nextLine();
-            String[] inputArgs = input.trim().split(" ");
             printSeparator();
 
             
             //command switch case
             try {
-                Command command = Command.valueOf(inputArgs[0].trim().toUpperCase());
+                Parser.Command command = parser.parseCommand(input);
                 switch (command) {
                     case BYE:
                         validSession = false;
@@ -58,7 +44,7 @@ public class Apollo {
                         break;
                     case MARK:
                         try {
-                            int indexMark = Integer.parseInt(inputArgs[1]) - 1;
+                            int indexMark = parser.parseIndex(input);
                             markAsDone(indexMark);
                         } catch (Exception e) {
                             System.out.println("Give a valid index mortal");
@@ -67,7 +53,7 @@ public class Apollo {
                         
                     case UNMARK:
                         try {
-                            int indexUnmark = Integer.parseInt(inputArgs[1]) - 1;
+                            int indexUnmark = parser.parseIndex(input);
                             markAsUndone(indexUnmark);
                         } catch (Exception e) {
                             System.out.println("Give a valid index mortal");
@@ -75,32 +61,14 @@ public class Apollo {
                         break;
                     case TODO:
                         try {
-                            String todoDescription = input.substring("todo".length()).trim();
-                            if (todoDescription.trim().length() < 1) {
-                                throw new Exception("Invalid arguments");
-                            }
-                            Todo todo = new Todo(todoDescription);
-                            addTask(todo);
+                            addTask(parser.parseTodo(input));
                         } catch (Exception e) {
                             System.out.println("The description cannot be empty mortal!");
                         }
                         break;
                     case EVENT:
                         try {
-                            String eventArgs = input.substring("event".length()).trim();
-                            int fromIndex = eventArgs.indexOf("/from");
-                            int toIndex = eventArgs.indexOf("/to");
-
-                            String eventDescription = eventArgs.substring(0, fromIndex);
-                            String fromString = eventArgs.substring(fromIndex + "/from".length(), toIndex);
-                            String toString = eventArgs.substring(toIndex + "/to".length());
-                            LocalDateTime from = DateParser.parseDateTime(fromString.trim(), LocalTime.MIDNIGHT);
-                            LocalDateTime to = DateParser.parseDateTime(toString.trim(), LocalTime.of(23, 59));
-                            if (to.isBefore(from)) {
-                                throw new IllegalArgumentException("Event end cannot be before its start");
-                            }
-                            Event event = new Event(eventDescription.trim(), from, to);
-                            addTask(event);
+                            addTask(parser.parseEvent(input));
                         } catch (DateTimeParseException e) {
                             System.out.println("Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!");
                         } catch (Exception e) {
@@ -109,14 +77,7 @@ public class Apollo {
                         break;
                     case DEADLINE:
                         try {
-                            String deadlineArgs = input.substring("deadline".length()).trim();
-                            int deadlineIndex = deadlineArgs.indexOf("/by");
-
-                            String deadlineDescription = deadlineArgs.substring(0, deadlineIndex);
-                            String deadlineString = deadlineArgs.substring(deadlineIndex + "/by".length());
-                            LocalDateTime by = DateParser.parseDateTime(deadlineString.trim(), LocalTime.of(23, 59));
-                            Deadline deadline = new Deadline(deadlineDescription.trim(), by);
-                            addTask(deadline);
+                            addTask(parser.parseDeadline(input));
                         } catch (DateTimeParseException e) {
                             System.out.println("Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!");
                         } catch (Exception e) {
@@ -131,15 +92,14 @@ public class Apollo {
                         break;
                     case DUETHISDATE:
                         try {
-                            String dateString = input.substring("dueThisDate".length()).trim();
-                            dueThisDate(DateParser.parseDate(dateString));
+                            dueThisDate(parser.parseDueDate(input));
                         } catch (DateTimeParseException e) {
                             System.out.println("Use a date in d/M/yyyy format, mortal!");
                         }
                         break;
                     case DELETE:
                         try {
-                            int indexDelete = Integer.parseInt(inputArgs[1]) - 1;
+                            int indexDelete = parser.parseIndex(input);
                             deleteTask(indexDelete);
                         } catch (Exception e) {
                             System.out.println("Give a valid index mortal");
