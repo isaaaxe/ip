@@ -1,4 +1,15 @@
+package apollo;
 import java.util.List;
+
+import apollo.parser.Parser;
+import apollo.parser.Parser.Command;
+import apollo.storage.Storage;
+import apollo.task.Deadline;
+import apollo.task.Event;
+import apollo.task.Task;
+import apollo.task.TaskList;
+import apollo.ui.Ui;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,7 +37,7 @@ public class Apollo {
             
             //command switch case
             try {
-                Parser.Command command = parser.parseCommand(input);
+                Command command = parser.parseCommand(input);
                 switch (command) {
                     case BYE:
                         validSession = false;

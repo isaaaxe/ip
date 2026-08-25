@@ -1,3 +1,4 @@
+package apollo.storage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -5,6 +6,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import apollo.task.Deadline;
+import apollo.task.Event;
+import apollo.task.Task;
+import apollo.task.Todo;
 
 /** Loads tasks from and saves tasks to a text file. */
 public class Storage {

@@ -1,6 +1,11 @@
+package apollo.parser;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import apollo.task.Deadline;
+import apollo.task.Event;
+import apollo.task.Todo;
 
 public class Parser {
     public enum Command {

@@ -1,3 +1,4 @@
+package apollo.task;
 public abstract class Task {
     protected String description;
     protected boolean isDone;
@@ -13,6 +14,10 @@ public abstract class Task {
 
     public void markAsDone(boolean bool) {
         this.isDone = bool;
+    }
+
+    public boolean getIsDone() {
+        return this.isDone;
     }
 
     public abstract String getIcon();
