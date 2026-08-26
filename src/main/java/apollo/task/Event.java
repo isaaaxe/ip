@@ -10,6 +10,13 @@ public class Event extends Task {
     protected LocalDateTime from;
     protected LocalDateTime to;
 
+    /**
+     * Creates an event spanning the supplied start and end times.
+     *
+     * @param event description of the event
+     * @param from date and time when the event starts
+     * @param to date and time when the event ends
+     */
     public Event(String event, LocalDateTime from, LocalDateTime to) {
         this.from = from;
         this.to = to;

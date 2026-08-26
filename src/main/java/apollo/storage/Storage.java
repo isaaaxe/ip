@@ -16,7 +16,11 @@ import apollo.task.Todo;
 public class Storage {
     private final Path filePath;
 
-    /** Creates a storage manager for the specified file path. */
+    /**
+     * Creates a storage manager for the specified file path.
+     *
+     * @param filePath path of the task data file
+     */
     public Storage(String filePath) {
         this.filePath = Path.of(filePath);
     }

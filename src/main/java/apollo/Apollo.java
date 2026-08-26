@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
+/** Coordinates Apollo's command loop, task operations, storage, and user interface. */
 public class Apollo {
     static boolean validSession = true;
     static TaskList tasks = new TaskList();
@@ -22,6 +23,11 @@ public class Apollo {
     static Parser parser = new Parser();
     static Ui ui = new Ui();
 
+    /**
+     * Starts Apollo and processes commands until the user exits.
+     *
+     * @param args command-line arguments
+     */
     public static void main(String[] args) {
 
         //load the apollo.txt task list to record
@@ -120,7 +126,7 @@ public class Apollo {
         saveTasks();
     }
 
-    // Apollo save/load info
+    /** Saves the current task list, displaying an error if persistence fails. */
     public static void saveTasks() {
         try {
             storage.save(tasks.getTasks());
@@ -129,6 +135,7 @@ public class Apollo {
         }
     }
 
+    /** Loads the saved task list, displaying an error if loading fails. */
     public static void loadTasks() {
         try {
             tasks = new TaskList(storage.load());
@@ -138,34 +145,48 @@ public class Apollo {
     }
 
 
-    //Apollo Command functions
-    
-    //list: directly prints the wanted output
+    /** Displays every task in the current task list. */
     public static void printList() {
         ui.showTaskList(tasks);
     }
 
-    //add task
+    /**
+     * Adds a task and confirms the addition to the user.
+     *
+     * @param task task to add
+     */
     public static void addTask(Task task) {
         tasks.add(task);
         ui.showTaskAdded(task);
     }
 
-    //mark
+    /**
+     * Marks the task at the specified zero-based index as done.
+     *
+     * @param index zero-based index of the task to mark
+     */
     public static void markAsDone(int index) {
         Task currTask = tasks.get(index);
         currTask.markAsDone(true);
         ui.showMarkChange(currTask);
     }
 
-    //unmark
+    /**
+     * Marks the task at the specified zero-based index as not done.
+     *
+     * @param index zero-based index of the task to unmark
+     */
     public static void markAsUndone(int index) {
         Task currTask = tasks.get(index);
         currTask.markAsDone(false);
         ui.showMarkChange(currTask);
     }
 
-    //delete
+    /**
+     * Deletes the task at the specified zero-based index and displays it.
+     *
+     * @param index zero-based index of the task to delete
+     */
     public static void deleteTask(int index) {
         Task deleteTask = tasks.delete(index);
         ui.showTaskDeleted(deleteTask, tasks.size());
