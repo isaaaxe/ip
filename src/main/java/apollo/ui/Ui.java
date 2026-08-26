@@ -99,7 +99,7 @@ public class Ui {
      * @param task task whose completion state changed
      */
     public void showMarkChange(Task task) {
-        String change = task.isDone() ? "marked" : "unmarked";
+        String change = task.getIsDone() ? "marked" : "unmarked";
         System.out.println(String.format(
                 "Your prayers are heard child, I have %s the specified task:", change));
         System.out.println(task);
