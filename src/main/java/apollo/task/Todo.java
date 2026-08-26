@@ -1,6 +1,13 @@
 package apollo.task;
+
+/** Represents a task without an associated date or time. */
 public class Todo extends Task {
-    
+
+    /**
+     * Creates a todo with the supplied description.
+     *
+     * @param description description of the todo
+     */
     public Todo(String description) {
         super(description);
     }

@@ -7,7 +7,9 @@ import apollo.task.Deadline;
 import apollo.task.Event;
 import apollo.task.Todo;
 
+/** Converts raw user commands into command types, arguments, and tasks. */
 public class Parser {
+    /** Commands recognized by Apollo. */
     public enum Command {
         LIST,
         MARK,
@@ -22,16 +24,37 @@ public class Parser {
         BYE
     }
 
+    /**
+     * Extracts and identifies the command word at the start of an input line.
+     *
+     * @param input complete command entered by the user
+     * @return the corresponding command
+     * @throws IllegalArgumentException if the command word is not recognized
+     */
     public Command parseCommand(String input) {
         String commandWord = input.trim().split("\\s+", 2)[0];
         return Command.valueOf(commandWord.toUpperCase());
     }
 
+    /**
+     * Parses a one-based task number and converts it to a zero-based list index.
+     *
+     * @param input command containing the task number as its second token
+     * @return zero-based task index
+     * @throws NumberFormatException if the task number is not an integer
+     */
     public int parseIndex(String input) {
         String[] inputArgs = input.trim().split("\\s+");
         return Integer.parseInt(inputArgs[1]) - 1;
     }
 
+    /**
+     * Creates a todo from a todo command.
+     *
+     * @param input command in the form {@code todo DESCRIPTION}
+     * @return the parsed todo
+     * @throws IllegalArgumentException if the description is empty
+     */
     public Todo parseTodo(String input) {
         String description = input.substring("todo".length()).trim();
         if (description.isEmpty()) {
@@ -40,6 +63,13 @@ public class Parser {
         return new Todo(description);
     }
 
+    /**
+     * Creates a deadline from a deadline command.
+     *
+     * @param input command in the form {@code deadline DESCRIPTION /by DATE_TIME}
+     * @return the parsed deadline
+     * @throws java.time.format.DateTimeParseException if the date and time is invalid
+     */
     public Deadline parseDeadline(String input) {
         String deadlineArgs = input.substring("deadline".length()).trim();
         int byIndex = deadlineArgs.indexOf("/by");
@@ -49,6 +79,14 @@ public class Parser {
         return new Deadline(description, by);
     }
 
+    /**
+     * Creates an event from an event command.
+     *
+     * @param input command in the form {@code event DESCRIPTION /from DATE_TIME /to DATE_TIME}
+     * @return the parsed event
+     * @throws java.time.format.DateTimeParseException if either date and time is invalid
+     * @throws IllegalArgumentException if the event ends before it starts
+     */
     public Event parseEvent(String input) {
         String eventArgs = input.substring("event".length()).trim();
         int fromIndex = eventArgs.indexOf("/from");
@@ -65,6 +103,13 @@ public class Parser {
         return new Event(description, from, to);
     }
 
+    /**
+     * Parses the date argument of a {@code dueThisDate} command.
+     *
+     * @param input command containing a date in {@code d/M/yyyy} format
+     * @return the parsed date
+     * @throws java.time.format.DateTimeParseException if the date is invalid
+     */
     public LocalDate parseDueDate(String input) {
         String dateString = input.substring("dueThisDate".length()).trim();
         return DateParser.parseDate(dateString);
