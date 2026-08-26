@@ -72,4 +72,22 @@ public class TaskList {
         }
         return matchingEvents;
     }
+
+    /**
+     * Finds tasks that include the search text.
+     *
+     * @param searchText the text that we are using to filter for tasks
+     * @return list of tasks that mention the search text
+     */
+    public List<Task> find(String searchText) {
+        List<Task> matchingTasks = new ArrayList<>();
+
+        for (Task task : this.tasks) {
+            if (task.containsDescription(searchText)) {
+                matchingTasks.add(task);
+            }
+        }
+
+        return matchingTasks;
+    }
 }

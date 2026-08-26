@@ -108,6 +108,15 @@ public class Apollo {
                             ui.showInvalidIndex();
                         }
                         break;
+                    case FIND:
+                        try {
+                            String searchText = parser.parseFindText(input);
+                            List<Task> matchingTasks = tasks.find(searchText);
+                            ui.showMatchingTasks(matchingTasks);
+                        } catch (IllegalArgumentException e) {
+                            ui.showEmptySearchText();
+                        }
+                        break;
             }
         } catch (Exception e) {
             ui.showInvalidCommand();

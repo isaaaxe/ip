@@ -20,6 +20,11 @@ public abstract class Task {
         return this.isDone;
     }
 
+    public boolean containsDescription(String searchText) {
+        return this.description.toLowerCase()
+                .contains(searchText.toLowerCase());
+    }
+
     public abstract String getIcon();
     public abstract String toString();
     public abstract String toFileString();

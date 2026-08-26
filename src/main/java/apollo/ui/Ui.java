@@ -122,4 +122,25 @@ public class Ui {
             System.out.println("You have no deadlines due on this date.");
         }
     }
+
+    /**
+     * Prints matching tasks output to terminal.
+     *
+     * @param matchingTasks list of tasks that contain the search text
+     */
+    public void showMatchingTasks(List<Task> matchingTasks) {
+        if (matchingTasks.isEmpty()) {
+            showEmptySearchText();
+        } else {
+            System.out.println("Here are the matching tasks in your list:");
+            for (int i = 0; i < matchingTasks.size(); i++) {
+                System.out.println(String.format(
+                        "%d. %s", i + 1, matchingTasks.get(i)));
+            }
+        }
+    }
+    /** Prints out empty search text */
+    public void showEmptySearchText() {
+        System.out.println("There are no matching tasks.");
+    }
 }
