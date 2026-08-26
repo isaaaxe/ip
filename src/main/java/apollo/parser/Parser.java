@@ -22,6 +22,7 @@ public class Parser {
         DUE_TODAY,
         ONGOING_NOW,
         DUE_THIS_DATE,
+        FIND,
         BYE
     }
 
@@ -120,5 +121,21 @@ public class Parser {
     public LocalDate parseDueDate(String input) {
         String dateString = input.substring("dueThisDate".length()).trim();
         return DateParser.parseDate(dateString);
+    }
+
+    /**
+     * Parses command to get the search text.
+     *
+     * @param input command line input
+     * @return search text used to filter for tasks
+     */
+    public String parseFindText(String input) {
+        String searchText = input.substring("find".length()).trim();
+
+        if (searchText.isEmpty()) {
+            throw new IllegalArgumentException("Search text cannot be empty");
+        }
+
+        return searchText;
     }
 }

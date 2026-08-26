@@ -29,8 +29,13 @@ public abstract class Task {
         this.isDone = isDone;
     }
 
-    public boolean isDone() {
+    public boolean getIsDone() {
         return this.isDone;
+    }
+
+    public boolean containsDescription(String searchText) {
+        return this.description.toLowerCase()
+                .contains(searchText.toLowerCase());
     }
 
     /** Returns the single-letter icon identifying this task's type. */

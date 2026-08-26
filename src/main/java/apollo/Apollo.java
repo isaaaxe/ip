@@ -109,6 +109,15 @@ public class Apollo {
                             ui.showInvalidIndex();
                         }
                         break;
+                    case FIND:
+                        try {
+                            String searchText = parser.parseFindText(input);
+                            List<Task> matchingTasks = tasks.find(searchText);
+                            ui.showMatchingTasks(matchingTasks);
+                        } catch (IllegalArgumentException e) {
+                            ui.showEmptySearchText();
+                        }
+                        break;
                     default:
                         throw new IllegalArgumentException("Unsupported command: " + command);
                 }
