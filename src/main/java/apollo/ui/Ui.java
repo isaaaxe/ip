@@ -1,4 +1,5 @@
 package apollo.ui;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
@@ -84,7 +85,7 @@ public class Ui {
     }
 
     public void showMarkChange(Task task) {
-        String change = task.getIsDone() ? "marked" : "unmarked";
+        String change = task.isDone() ? "marked" : "unmarked";
         System.out.println(String.format(
                 "Your prayers are heard child, I have %s the specified task:", change));
         System.out.println(task);

@@ -1,4 +1,5 @@
 package apollo.task;
+
 public abstract class Task {
     protected String description;
     protected boolean isDone;
@@ -12,11 +13,11 @@ public abstract class Task {
         return this.isDone ? "X" : " ";
     }
 
-    public void markAsDone(boolean bool) {
-        this.isDone = bool;
+    public void markAsDone(boolean isDone) {
+        this.isDone = isDone;
     }
 
-    public boolean getIsDone() {
+    public boolean isDone() {
         return this.isDone;
     }
 

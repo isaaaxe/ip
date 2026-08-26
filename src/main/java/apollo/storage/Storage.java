@@ -1,4 +1,5 @@
 package apollo.storage;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,20 +71,20 @@ public class Storage {
         Task task;
 
         switch (type) {
-        case "T":
-            task = new Todo(description);
-            break;
-        case "D":
-            task = new Deadline(description,
-                    LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            break;
-        case "E":
-            task = new Event(description,
-                    LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                    LocalDateTime.parse(parts[4], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            break;
-        default:
-            return null;
+            case "T":
+                task = new Todo(description);
+                break;
+            case "D":
+                task = new Deadline(description,
+                        LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                break;
+            case "E":
+                task = new Event(description,
+                        LocalDateTime.parse(parts[3], DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                        LocalDateTime.parse(parts[4], DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                break;
+            default:
+                return null;
         }
 
         task.markAsDone(isDone);

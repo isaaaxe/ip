@@ -1,18 +1,18 @@
 package apollo.storage;
 
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import apollo.task.Deadline;
+import apollo.task.Event;
 import apollo.task.Task;
 import apollo.task.Todo;
-import apollo.task.Event;
-import apollo.task.Deadline;
-
-import java.util.List;
 
 public class StorageTest {
     @TempDir
@@ -20,28 +20,28 @@ public class StorageTest {
 
     @Test
     public void load_fileDoesNotExist_returnsEmptyList() throws IOException {
-        //setting up
+        // Setting up
         Path missingFile = tempDir.resolve("tasks.txt");
         Storage storage = new Storage(missingFile.toString());
 
-        //action to test
+        // Action to test
         List<Task> tasks = storage.load();
 
-        //assertion
+        // Assertion
         Assertions.assertTrue(tasks.isEmpty());
     }
 
     @Test
     public void save_todo_writesExpectedFileContent() throws IOException {
-        //setting up
+        // Setting up
         Path tempFile = tempDir.resolve("tasks.txt");
         Storage storage = new Storage(tempFile.toString());
         Todo todo = new Todo("test 1");
 
-        //action to test
+        // Action to test
         storage.save(List.of(todo));
 
-        //assertion
+        // Assertion
         List<String> lines = Files.readAllLines(tempFile);
         Assertions.assertEquals(List.of("T | 0 | test 1"), lines);
     }
@@ -69,7 +69,9 @@ public class StorageTest {
 
         Assertions.assertEquals(1, tasks.size());
         Assertions.assertInstanceOf(Event.class, tasks.get(0));
-        Assertions.assertEquals("E | 0 | test event | 2026-08-24T00:00:00 | 2026-08-25T23:59:00", tasks.get(0).toFileString());
+        Assertions.assertEquals(
+                "E | 0 | test event | 2026-08-24T00:00:00 | 2026-08-25T23:59:00",
+                tasks.get(0).toFileString());
     }
 
     @Test

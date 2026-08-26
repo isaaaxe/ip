@@ -1,4 +1,9 @@
 package apollo;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import apollo.parser.Parser;
@@ -10,32 +15,23 @@ import apollo.task.Task;
 import apollo.task.TaskList;
 import apollo.ui.Ui;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-
 public class Apollo {
-    static boolean validSession = true;
-    static TaskList tasks = new TaskList();
-    static Storage storage = new Storage("data/apollo.txt");
-    static Parser parser = new Parser();
-    static Ui ui = new Ui();
+    private static boolean validSession = true;
+    private static TaskList tasks = new TaskList();
+    private static Storage storage = new Storage("data/apollo.txt");
+    private static Parser parser = new Parser();
+    private static Ui ui = new Ui();
 
     public static void main(String[] args) {
 
-        //load the apollo.txt task list to record
+        // Load the saved task list.
         loadTasks();
 
-        //main process
         ui.showGreeting();
         while (validSession) {
-            
             String input = ui.readCommand();
             ui.showSeparator();
 
-            
-            //command switch case
             try {
                 Command command = parser.parseCommand(input);
                 switch (command) {
@@ -51,9 +47,8 @@ public class Apollo {
                             markAsDone(indexMark);
                         } catch (Exception e) {
                             ui.showInvalidIndex();
-                        } 
+                        }
                         break;
-                        
                     case UNMARK:
                         try {
                             int indexUnmark = parser.parseIndex(input);
@@ -87,13 +82,13 @@ public class Apollo {
                             ui.showInvalidTaskArguments();
                         }
                         break;
-                    case DUETODAY:
+                    case DUE_TODAY:
                         dueToday();
                         break;
-                    case ONGOINGNOW:
+                    case ONGOING_NOW:
                         ongoingNow();
                         break;
-                    case DUETHISDATE:
+                    case DUE_THIS_DATE:
                         try {
                             dueThisDate(parser.parseDueDate(input));
                         } catch (DateTimeParseException e) {
@@ -108,11 +103,13 @@ public class Apollo {
                             ui.showInvalidIndex();
                         }
                         break;
-            }
-        } catch (Exception e) {
-            ui.showInvalidCommand();
-        } finally { 
-            ui.showSeparator();
+                    default:
+                        throw new IllegalArgumentException("Unsupported command: " + command);
+                }
+            } catch (Exception e) {
+                ui.showInvalidCommand();
+            } finally {
+                ui.showSeparator();
             }
         }
         ui.showExit();
@@ -120,7 +117,6 @@ public class Apollo {
         saveTasks();
     }
 
-    // Apollo save/load info
     public static void saveTasks() {
         try {
             storage.save(tasks.getTasks());
@@ -137,38 +133,30 @@ public class Apollo {
         }
     }
 
-
-    //Apollo Command functions
-    
-    //list: directly prints the wanted output
     public static void printList() {
         ui.showTaskList(tasks);
     }
 
-    //add task
     public static void addTask(Task task) {
         tasks.add(task);
         ui.showTaskAdded(task);
     }
 
-    //mark
     public static void markAsDone(int index) {
-        Task currTask = tasks.get(index);
-        currTask.markAsDone(true);
-        ui.showMarkChange(currTask);
+        Task currentTask = tasks.get(index);
+        currentTask.markAsDone(true);
+        ui.showMarkChange(currentTask);
     }
 
-    //unmark
     public static void markAsUndone(int index) {
-        Task currTask = tasks.get(index);
-        currTask.markAsDone(false);
-        ui.showMarkChange(currTask);
+        Task currentTask = tasks.get(index);
+        currentTask.markAsDone(false);
+        ui.showMarkChange(currentTask);
     }
 
-    //delete
     public static void deleteTask(int index) {
-        Task deleteTask = tasks.delete(index);
-        ui.showTaskDeleted(deleteTask, tasks.size());
+        Task deletedTask = tasks.delete(index);
+        ui.showTaskDeleted(deletedTask, tasks.size());
     }
 
     /** Shows all deadlines due on the current date. */

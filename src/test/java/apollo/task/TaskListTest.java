@@ -1,15 +1,13 @@
 package apollo.task;
 
-import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
-
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class TaskListTest {
     @TempDir
@@ -22,7 +20,7 @@ public class TaskListTest {
 
         taskList.add(todo);
 
-        //assert
+        // Assert
         Assertions.assertEquals(1, taskList.size());
         Assertions.assertSame(todo, taskList.get(0));
     }
@@ -44,7 +42,7 @@ public class TaskListTest {
 
         Task removedTask = taskList.delete(1);
 
-        //assert
+        // Assert
         Assertions.assertEquals(2, taskList.size());
         Assertions.assertSame(todo, taskList.get(0));
         Assertions.assertSame(deadline, taskList.get(1));

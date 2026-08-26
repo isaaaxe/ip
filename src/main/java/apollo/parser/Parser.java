@@ -1,4 +1,5 @@
 package apollo.parser;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -16,14 +17,20 @@ public class Parser {
         TODO,
         EVENT,
         DEADLINE,
-        DUETODAY,
-        ONGOINGNOW,
-        DUETHISDATE,
+        DUE_TODAY,
+        ONGOING_NOW,
+        DUE_THIS_DATE,
         BYE
     }
 
     public Command parseCommand(String input) {
         String commandWord = input.trim().split("\\s+", 2)[0];
+        commandWord = switch (commandWord.toUpperCase()) {
+            case "DUETODAY" -> "DUE_TODAY";
+            case "ONGOINGNOW" -> "ONGOING_NOW";
+            case "DUETHISDATE" -> "DUE_THIS_DATE";
+            default -> commandWord;
+        };
         return Command.valueOf(commandWord.toUpperCase());
     }
 

@@ -1,4 +1,5 @@
 package apollo.task;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -8,7 +9,7 @@ public class Deadline extends Task {
             DateTimeFormatter.ofPattern("MMM dd uuuu, h:mma");
 
     protected LocalDateTime by;
-    
+
     public Deadline(String description, LocalDateTime by) {
         this.by = by;
         super(description);
