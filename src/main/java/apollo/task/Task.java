@@ -25,11 +25,11 @@ public abstract class Task {
      *
      * @param bool {@code true} to mark the task as done, or {@code false} to mark it as undone
      */
-    public void markAsDone(boolean bool) {
-        this.isDone = bool;
+    public void markAsDone(boolean isDone) {
+        this.isDone = isDone;
     }
 
-    public boolean getIsDone() {
+    public boolean isDone() {
         return this.isDone;
     }
 

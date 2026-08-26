@@ -9,7 +9,7 @@ import apollo.parser.Parser.Command;
 import apollo.task.Deadline;
 
 public class ParseTest {
-    
+
     @Test
     public void parseCommand_differentCapitalisation_returnsCorrectCommand() {
         Parser parser = new Parser();
@@ -34,10 +34,10 @@ public class ParseTest {
         Deadline deadline = parser.parseDeadline("deadline test /by 30/8/2026 1800");
 
         Assertions.assertEquals(
-            LocalDateTime.of(2026, 8, 30, 18, 0), 
-            deadline.getBy());
+                LocalDateTime.of(2026, 8, 30, 18, 0),
+                deadline.getBy());
         Assertions.assertEquals(
-            "D | 0 | test | 2026-08-30T18:00:00", 
-            deadline.toFileString());
+                "D | 0 | test | 2026-08-30T18:00:00",
+                deadline.toFileString());
     }
 }
