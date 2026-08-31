@@ -9,7 +9,7 @@ public class Deadline extends Task {
             DateTimeFormatter.ofPattern("MMM dd uuuu, h:mma");
 
     protected LocalDateTime by;
-    
+
     /**
      * Creates a deadline with its due date and time.
      *
