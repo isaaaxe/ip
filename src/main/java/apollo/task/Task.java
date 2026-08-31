@@ -23,7 +23,7 @@ public abstract class Task {
     /**
      * Sets the completion state of this task.
      *
-     * @param bool {@code true} to mark the task as done, or {@code false} to mark it as undone
+     * @param isDone {@code true} to mark the task as done, or {@code false} to mark it as undone
      */
     public void markAsDone(boolean isDone) {
         this.isDone = isDone;
@@ -33,6 +33,11 @@ public abstract class Task {
         return this.isDone;
     }
 
+    /**
+     * Checks if Task description contains searchText
+     *
+     * @param searchText the user input which we are checking for
+     */
     public boolean containsDescription(String searchText) {
         return this.description.toLowerCase()
                 .contains(searchText.toLowerCase());

@@ -33,11 +33,13 @@ public class Ui {
         this.scanner.close();
     }
 
+    /** Prints greeting message to console */
     public void showGreeting() {
         showBarrier();
         System.out.println(GREETING);
     }
 
+    /** Prints exit message to console*/
     public void showExit() {
         System.out.println(EXIT_MESSAGE);
         showBarrier();
