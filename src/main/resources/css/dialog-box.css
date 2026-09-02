@@ -24,6 +24,10 @@
     -fx-background-color: lightpink;
 }
 
+.list-label {
+    -fx-background-color: #77dbff;
+}
+
 
 
 #displayPicture {
