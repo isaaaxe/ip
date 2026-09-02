@@ -28,6 +28,11 @@ public class Ui {
         return this.scanner.nextLine();
     }
 
+    /** Returns whether another console command is available to read. */
+    public boolean hasNextCommand() {
+        return this.scanner.hasNextLine();
+    }
+
     /** Closes the console input scanner. */
     public void close() {
         this.scanner.close();
@@ -51,6 +56,11 @@ public class Ui {
 
     public void showSeparator() {
         System.out.println("-----------------------------------------------------------------------");
+    }
+
+    /** Prints a response produced by Apollo's command-processing core. */
+    public void showResponse(String response) {
+        System.out.println(response);
     }
 
     public void showInvalidCommand() {
