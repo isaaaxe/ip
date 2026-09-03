@@ -28,8 +28,10 @@ public class TaskList {
      *
      * @param task task to add
      */
-    public void add(Task task) {
-        this.tasks.add(task);
+    public void add(Task... tasks) {
+        for(Task task : tasks) {
+            this.tasks.add(task);
+        }   
     }
 
     /**
