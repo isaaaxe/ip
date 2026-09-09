@@ -23,6 +23,7 @@ public class Parser {
         ONGOING_NOW,
         DUE_THIS_DATE,
         FIND,
+        UNDO,
         BYE
     }
 

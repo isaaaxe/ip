@@ -42,6 +42,22 @@ public class TaskList {
     }
 
     /**
+     * Inserts a task at the specified zero-based index.
+     *
+     * @param index zero-based position at which to insert the task
+     * @param task task to insert
+     */
+    public void add(int index, Task task) {
+        assert task != null : "TaskList must not contain null tasks";
+        int previousSize = this.tasks.size();
+
+        this.tasks.add(index, task);
+
+        assert this.tasks.size() == previousSize + 1
+                : "Inserting one task must increase task count by one";
+    }
+
+    /**
      * Returns the task at the specified zero-based index.
      *
      * @param index zero-based index of the task
