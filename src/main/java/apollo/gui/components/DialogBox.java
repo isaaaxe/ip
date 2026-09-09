@@ -3,6 +3,8 @@ package apollo.gui.components;
 import java.io.IOException;
 import java.util.Collections;
 
+import apollo.ResponseType;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -37,7 +39,7 @@ public class DialogBox extends HBox {
 
         dialog.setText(text);
         displayPicture.setImage(img);
-        Circle clip = new Circle(30,30,30);
+        Circle clip = new Circle(30, 30, 30);
         displayPicture.setClip(clip);
     }
 
@@ -56,18 +58,18 @@ public class DialogBox extends HBox {
         return new DialogBox(text, img);
     }
 
-    private void changeDialogStyle(String commandType) {
-        switch (commandType) {
-            case "AddCommand":
+    private void changeDialogStyle(ResponseType responseType) {
+        switch (responseType) {
+            case ADD:
                 dialog.getStyleClass().add("add-label");
                 break;
-            case "ChangeMarkCommand":
+            case MARK_CHANGE:
                 dialog.getStyleClass().add("marked-label");
                 break;
-            case "DeleteCommand":
+            case DELETE:
                 dialog.getStyleClass().add("delete-label");
                 break;
-            case "ListCommand":
+            case LIST:
                 dialog.getStyleClass().add("list-label");
                 break;
             default:
@@ -75,10 +77,10 @@ public class DialogBox extends HBox {
         }
     }
 
-    public static DialogBox getApolloDialog(String text, Image img, String commandType) {
+    public static DialogBox getApolloDialog(String text, Image img, ResponseType responseType) {
         var db = new DialogBox(text, img);
         db.flip();
-        db.changeDialogStyle(commandType);
+        db.changeDialogStyle(responseType);
         return db;
     }
 }
