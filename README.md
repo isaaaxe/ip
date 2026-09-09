@@ -29,3 +29,7 @@ Used ChatGPT's Codex in the following locations
 - Bulk of coding standard was fixed by AI, majority of it looks correct to me.
 
 All AI-generated code was reviewed by me, Isaac Choong, understood and tested before commiting and pushing to the remote repository.
+
+### Level-10
+- Helped refactor Apollo to become UI-independent, as well as create CLIAppliation.java to allow users to access the CLI appliation, whilst the default `./gradlew run`  will run the JavaFX application
+
