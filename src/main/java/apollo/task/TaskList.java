@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Stores tasks and provides operations for managing and querying them. */
 public class TaskList {
@@ -86,16 +87,11 @@ public class TaskList {
      */
     public List<Deadline> getDeadlinesDueOn(LocalDate date) {
         assert date != null : "Date used to search deadlines must not be null";
-        List<Deadline> matchingDeadlines = new ArrayList<>();
-        for (Task task : this.tasks) {
-            if (task instanceof Deadline) {
-                Deadline deadline = (Deadline) task;
-                if (deadline.getBy().toLocalDate().equals(date)) {
-                    matchingDeadlines.add(deadline);
-                }
-            }
-        }
-        return matchingDeadlines;
+        return this.tasks.stream()
+                .filter(Deadline.class::isInstance)
+                .map(Deadline.class::cast)
+                .filter(deadline -> deadline.getBy().toLocalDate().equals(date))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -106,18 +102,11 @@ public class TaskList {
      */
     public List<Event> getEventsOngoingAt(LocalDateTime dateTime) {
         assert dateTime != null : "Time used to search events must not be null";
-        List<Event> matchingEvents = new ArrayList<>();
-        for (Task task : this.tasks) {
-            if (task instanceof Event) {
-                Event event = (Event) task;
-                boolean hasStarted = !dateTime.isBefore(event.getFrom());
-                boolean hasNotEnded = !dateTime.isAfter(event.getTo());
-                if (hasStarted && hasNotEnded) {
-                    matchingEvents.add(event);
-                }
-            }
-        }
-        return matchingEvents;
+        return this.tasks.stream()
+                .filter(Event.class::isInstance)
+                .map(Event.class::cast)
+                .filter(event -> !dateTime.isBefore(event.getFrom()) && !dateTime.isAfter(event.getTo()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -127,14 +116,8 @@ public class TaskList {
      * @return list of tasks that mention the search text
      */
     public List<Task> find(String searchText) {
-        List<Task> matchingTasks = new ArrayList<>();
-
-        for (Task task : this.tasks) {
-            if (task.containsDescription(searchText)) {
-                matchingTasks.add(task);
-            }
-        }
-
-        return matchingTasks;
+        return this.tasks.stream()
+                .filter(task -> task.containsDescription(searchText))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
