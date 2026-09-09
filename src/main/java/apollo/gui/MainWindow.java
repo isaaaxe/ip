@@ -3,7 +3,6 @@ package apollo.gui;
 import apollo.Apollo;
 import apollo.ResponseType;
 import apollo.gui.components.DialogBox;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;

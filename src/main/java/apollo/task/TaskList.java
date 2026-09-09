@@ -27,12 +27,12 @@ public class TaskList {
     /**
      * Adds a task to the list.
      *
-     * @param task task to add
+     * @param tasks tasks to add
      */
     public void add(Task... tasks) {
         int previousSize = this.tasks.size();
 
-        for(Task task : tasks) {
+        for (Task task : tasks) {
             assert task != null : "TaskList must not contain null tasks";
             this.tasks.add(task);
         }

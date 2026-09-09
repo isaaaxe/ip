@@ -1,13 +1,17 @@
 package apollo.gui;
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.layout.AnchorPane;
+
 import java.io.IOException;
 
 import apollo.Apollo;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
+/**
+ * Launches and configures the Apollo graphical user interface.
+ */
 public class Main extends Application {
 
     private Apollo apollo = new Apollo();
@@ -21,7 +25,8 @@ public class Main extends Application {
             stage.setScene(scene);
             stage.setMinHeight(220);
             stage.setMinWidth(417);
-            fxmlLoader.<MainWindow>getController().setApollo(apollo);  // inject the Apollo instance
+            // inject the Apollo instance
+            fxmlLoader.<MainWindow>getController().setApollo(apollo);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
