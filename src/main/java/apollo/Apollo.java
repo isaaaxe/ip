@@ -28,7 +28,7 @@ public class Apollo {
     private final Parser parser;
     private TaskList tasks;
     private boolean exitRequested;
-    private String commandType = "DefaultCommand";
+    private ResponseType responseType = ResponseType.DEFAULT;
     private String loadingError;
 
     /** Creates Apollo using the default task storage file. */
@@ -55,13 +55,13 @@ public class Apollo {
      * @return Apollo's response to the command
      */
     public String getResponse(String input) {
-        this.commandType = "DefaultCommand";
+        this.responseType = ResponseType.DEFAULT;
 
         try {
             Command command = this.parser.parseCommand(input);
             // Invalid commands should cause the parser to throw, never return null.
             assert command != null : "Parser must return a command after successful parsing";
-            this.commandType = mapCommandType(command);
+            this.responseType = mapResponseType(command);
 
             return switch (command) {
                 case BYE -> processBye();
@@ -78,14 +78,14 @@ public class Apollo {
                 case FIND -> processFind(input);
             };
         } catch (Exception e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Invalid command given, try again mortal.";
         }
     }
 
-    /** Returns the category of the most recently processed command for GUI styling. */
-    public String getCommandType() {
-        return this.commandType;
+    /** Returns the category of the most recently produced response for GUI styling. */
+    public ResponseType getResponseType() {
+        return this.responseType;
     }
 
     /** Returns whether the current front-end session has received {@code bye}. */
@@ -125,7 +125,7 @@ public class Apollo {
             assert task.getIsDone() == isDone : "Task completion state must match the requested state";
             return appendSavingErrorIfNeeded(formatMarkChange(task));
         } catch (Exception e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Give a valid index mortal";
         }
     }
@@ -135,7 +135,7 @@ public class Apollo {
         try {
             return addTask(this.parser.parseTodo(input));
         } catch (Exception e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "The description cannot be empty mortal!";
         }
     }
@@ -145,10 +145,10 @@ public class Apollo {
         try {
             return addTask(this.parser.parseEvent(input));
         } catch (DateTimeParseException e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!";
         } catch (Exception e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Give me good arguments mortal!";
         }
     }
@@ -158,10 +158,10 @@ public class Apollo {
         try {
             return addTask(this.parser.parseDeadline(input));
         } catch (DateTimeParseException e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!";
         } catch (Exception e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Give me good arguments mortal!";
         }
     }
@@ -171,7 +171,7 @@ public class Apollo {
         try {
             return formatDeadlinesDueOn(this.parser.parseDueDate(input));
         } catch (DateTimeParseException e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Use a date in d/M/yyyy format, mortal!";
         }
     }
@@ -187,7 +187,7 @@ public class Apollo {
                     deletedTask, this.tasks.size());
             return appendSavingErrorIfNeeded(response);
         } catch (Exception e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "Give a valid index mortal";
         }
     }
@@ -198,7 +198,7 @@ public class Apollo {
             String searchText = this.parser.parseFindText(input);
             return formatMatchingTasks(this.tasks.find(searchText));
         } catch (IllegalArgumentException e) {
-            this.commandType = "ErrorCommand";
+            this.responseType = ResponseType.ERROR;
             return "There are no matching tasks.";
         }
     }
@@ -281,14 +281,14 @@ public class Apollo {
         }
     }
 
-    /** Maps parser commands onto the style categories understood by the GUI. */
-    private String mapCommandType(Command command) {
+    /** Maps parser commands onto response categories understood by the GUI. */
+    private ResponseType mapResponseType(Command command) {
         return switch (command) {
-            case TODO, EVENT, DEADLINE -> "AddCommand";
-            case MARK, UNMARK -> "ChangeMarkCommand";
-            case DELETE -> "DeleteCommand";
-            case LIST, FIND, DUE_TODAY, ONGOING_NOW, DUE_THIS_DATE -> "ListCommand";
-            case BYE -> "ByeCommand";
+            case TODO, EVENT, DEADLINE -> ResponseType.ADD;
+            case MARK, UNMARK -> ResponseType.MARK_CHANGE;
+            case DELETE -> ResponseType.DELETE;
+            case LIST, FIND, DUE_TODAY, ONGOING_NOW, DUE_THIS_DATE -> ResponseType.LIST;
+            case BYE -> ResponseType.BYE;
         };
     }
 }
