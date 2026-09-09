@@ -26,6 +26,8 @@ public final class DateParser {
      * @throws DateTimeParseException if the input does not match either accepted format
      */
     public static LocalDateTime parseDateTime(String input, LocalTime defaultTime) {
+        assert defaultTime != null
+            : "A default time must be supplied for date-only input";
         try {
             return LocalDateTime.parse(input, DATE_TIME_FORMATTER);
         } catch (DateTimeParseException dateTimeException) {

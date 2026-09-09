@@ -59,6 +59,8 @@ public class Apollo {
 
         try {
             Command command = this.parser.parseCommand(input);
+            // Invalid commands should cause the parser to throw, never return null.
+            assert command != null : "Parser must return a command after successful parsing";
             this.responseType = mapResponseType(command);
 
             return switch (command) {
@@ -120,6 +122,7 @@ public class Apollo {
             int index = this.parser.parseIndex(input);
             Task task = this.tasks.get(index);
             task.markAsDone(isDone);
+            assert task.getIsDone() == isDone : "Task completion state must match the requested state";
             return appendSavingErrorIfNeeded(formatMarkChange(task));
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
@@ -202,6 +205,8 @@ public class Apollo {
 
     /** Adds a task and returns its confirmation message. */
     private String addTask(Task task) {
+        // Only successfully parsed tasks should reach this internal method.
+        assert task != null : "A successfully parsed task must not be null";
         this.tasks.add(task);
         String response = String.format(
                 "Understood child, adding to your task list:%n%s", task);
