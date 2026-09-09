@@ -29,9 +29,15 @@ public class TaskList {
      * @param task task to add
      */
     public void add(Task... tasks) {
+        int previousSize = this.tasks.size();
+
         for(Task task : tasks) {
+            assert task != null : "TaskList must not contain null tasks";
             this.tasks.add(task);
-        }   
+        }
+
+        assert this.tasks.size() == previousSize + tasks.length
+                : "Task count must increase by number of tasks added";
     }
 
     /**
@@ -51,7 +57,15 @@ public class TaskList {
      * @return removed task
      */
     public Task delete(int index) {
-        return this.tasks.remove(index);
+        int previousSize = this.tasks.size();
+        Task deletedTask = this.tasks.remove(index);
+
+        assert this.tasks.size() == previousSize - 1
+                : "Deleting one task must decrease task count by one";
+        assert deletedTask != null
+                : "Deleting a valid index must return a task";
+
+        return deletedTask;
     }
 
     /** Returns the number of tasks in the list. */
@@ -71,6 +85,7 @@ public class TaskList {
      * @return deadlines due on the specified date
      */
     public List<Deadline> getDeadlinesDueOn(LocalDate date) {
+        assert date != null : "Date used to search deadlines must not be null";
         List<Deadline> matchingDeadlines = new ArrayList<>();
         for (Task task : this.tasks) {
             if (task instanceof Deadline) {
@@ -90,6 +105,7 @@ public class TaskList {
      * @return events ongoing at the specified date and time
      */
     public List<Event> getEventsOngoingAt(LocalDateTime dateTime) {
+        assert dateTime != null : "Time used to search events must not be null";
         List<Event> matchingEvents = new ArrayList<>();
         for (Task task : this.tasks) {
             if (task instanceof Event) {
