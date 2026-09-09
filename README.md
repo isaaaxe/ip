@@ -33,3 +33,13 @@ All AI-generated code was reviewed by me, Isaac Choong, understood and tested be
 ### Level-10
 - Helped refactor Apollo to become UI-independent, as well as create CLIAppliation.java to allow users to access the CLI appliation, whilst the default `./gradlew run`  will run the JavaFX application
 
+### A-Assertions
+- Helped identify possible locations where assert statements would be useful.
+
+### A-CodeQuality
+- Identify and implement parts of code where code quality can be improved
+- Removed redundant code violating DRY Principle in Ui
+- Refactored magic strings used for responses and introduced ResponseType enum
+
+### A-Streams
+- Helped replace for-loops with cleaner stream operations in TaskList and Storage
