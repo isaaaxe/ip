@@ -15,6 +15,8 @@ import javafx.scene.layout.VBox;
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
+    private static final String UNDO_AVAILABLE_STYLE_CLASS = "undo-available";
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -23,6 +25,8 @@ public class MainWindow extends AnchorPane {
     private TextField userInput;
     @FXML
     private Button sendButton;
+    @FXML
+    private Button undoButton;
 
     private Apollo apollo;
 
@@ -41,6 +45,7 @@ public class MainWindow extends AnchorPane {
             dialogContainer.getChildren().add(
                     DialogBox.getApolloDialog(apollo.getLoadingError(), apolloImage, ResponseType.ERROR));
         }
+        updateUndoButtonState();
     }
 
     /**
@@ -53,12 +58,42 @@ public class MainWindow extends AnchorPane {
         if (input.isBlank()) {
             return;
         }
+        displayCommandResponse(input);
+        userInput.clear();
+    }
+
+    /** Processes an undo command when the Undo button is pressed. */
+    @FXML
+    private void handleUndo() {
+        if (!apollo.canUndo()) {
+            return;
+        }
+        displayCommandResponse("undo");
+        userInput.requestFocus();
+    }
+
+    /** Processes a command and appends the user and Apollo dialog boxes. */
+    private void displayCommandResponse(String input) {
         String response = apollo.getResponse(input);
         ResponseType responseType = apollo.getResponseType();
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
                 DialogBox.getApolloDialog(response, apolloImage, responseType)
         );
-        userInput.clear();
+        updateUndoButtonState();
+    }
+
+    /** Enables and styles the Undo button when the undo history is non-empty. */
+    private void updateUndoButtonState() {
+        boolean isUndoAvailable = this.apollo != null && this.apollo.canUndo();
+        this.undoButton.setDisable(!isUndoAvailable);
+
+        if (isUndoAvailable) {
+            if (!this.undoButton.getStyleClass().contains(UNDO_AVAILABLE_STYLE_CLASS)) {
+                this.undoButton.getStyleClass().add(UNDO_AVAILABLE_STYLE_CLASS);
+            }
+        } else {
+            this.undoButton.getStyleClass().remove(UNDO_AVAILABLE_STYLE_CLASS);
+        }
     }
 }

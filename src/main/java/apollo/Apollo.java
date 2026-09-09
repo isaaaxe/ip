@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 import apollo.parser.Parser;
@@ -21,11 +23,14 @@ import apollo.task.TaskList;
  */
 public class Apollo {
     private static final String DEFAULT_STORAGE_PATH = "data/apollo.txt";
+    private static final int MAX_UNDO_HISTORY = 5;
     private static final String EXIT_MESSAGE =
             "To the end of the west wind, where fresh flowers bloom.";
 
     private final Storage storage;
     private final Parser parser;
+    /** Stores inverse operations from newest to oldest for session-only undo. */
+    private final Deque<Runnable> undoHistory = new ArrayDeque<>();
     private TaskList tasks;
     private boolean exitRequested;
     private ResponseType responseType = ResponseType.DEFAULT;
@@ -76,6 +81,7 @@ public class Apollo {
                 case DUE_THIS_DATE -> processDueThisDate(input);
                 case DELETE -> processDelete(input);
                 case FIND -> processFind(input);
+                case UNDO -> processUndo();
             };
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
@@ -101,6 +107,11 @@ public class Apollo {
         return this.loadingError;
     }
 
+    /** Returns whether the current session contains an action that can be undone. */
+    public boolean canUndo() {
+        return !this.undoHistory.isEmpty();
+    }
+
     /** Loads saved tasks without depending on either the console or JavaFX UI. */
     private void loadTasks() {
         try {
@@ -121,7 +132,11 @@ public class Apollo {
         try {
             int index = this.parser.parseIndex(input);
             Task task = this.tasks.get(index);
+            boolean previousState = task.getIsDone();
             task.markAsDone(isDone);
+            if (previousState != isDone) {
+                recordUndo(() -> task.markAsDone(previousState));
+            }
             assert task.getIsDone() == isDone : "Task completion state must match the requested state";
             return appendSavingErrorIfNeeded(formatMarkChange(task));
         } catch (Exception e) {
@@ -181,6 +196,7 @@ public class Apollo {
         try {
             int index = this.parser.parseIndex(input);
             Task deletedTask = this.tasks.delete(index);
+            recordUndo(() -> this.tasks.add(index, deletedTask));
             String response = String.format(
                     "Understood young one, I have removed this task:%n%s%n"
                             + "You now have %d tasks left.",
@@ -207,10 +223,32 @@ public class Apollo {
     private String addTask(Task task) {
         // Only successfully parsed tasks should reach this internal method.
         assert task != null : "A successfully parsed task must not be null";
+        int addedIndex = this.tasks.size();
         this.tasks.add(task);
+        recordUndo(() -> this.tasks.delete(addedIndex));
         String response = String.format(
                 "Understood child, adding to your task list:%n%s", task);
         return appendSavingErrorIfNeeded(response);
+    }
+
+    /** Reverses the most recent undoable action in the current session. */
+    private String processUndo() {
+        if (this.undoHistory.isEmpty()) {
+            this.responseType = ResponseType.ERROR;
+            return "There is nothing to undo, mortal.";
+        }
+
+        this.undoHistory.pop().run();
+        return appendSavingErrorIfNeeded("Your previous action has been undone, child.");
+    }
+
+    /** Records an inverse operation while retaining only the five newest operations. */
+    private void recordUndo(Runnable undoAction) {
+        assert undoAction != null : "An undo action must not be null";
+        this.undoHistory.push(undoAction);
+        if (this.undoHistory.size() > MAX_UNDO_HISTORY) {
+            this.undoHistory.removeLast();
+        }
     }
 
     /** Formats the confirmation for a mark or unmark operation. */
@@ -288,6 +326,7 @@ public class Apollo {
             case MARK, UNMARK -> ResponseType.MARK_CHANGE;
             case DELETE -> ResponseType.DELETE;
             case LIST, FIND, DUE_TODAY, ONGOING_NOW, DUE_THIS_DATE -> ResponseType.LIST;
+            case UNDO -> ResponseType.DEFAULT;
             case BYE -> ResponseType.BYE;
         };
     }
