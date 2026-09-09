@@ -1,7 +1,9 @@
 package apollo.gui;
 
 import apollo.Apollo;
+import apollo.ResponseType;
 import apollo.gui.components.DialogBox;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -38,7 +40,7 @@ public class MainWindow extends AnchorPane {
         this.apollo = apollo;
         if (apollo.getLoadingError() != null) {
             dialogContainer.getChildren().add(
-                    DialogBox.getApolloDialog(apollo.getLoadingError(), apolloImage, "ErrorCommand"));
+                    DialogBox.getApolloDialog(apollo.getLoadingError(), apolloImage, ResponseType.ERROR));
         }
     }
 
@@ -53,10 +55,10 @@ public class MainWindow extends AnchorPane {
             return;
         }
         String response = apollo.getResponse(input);
-        String commandType = apollo.getCommandType();
+        ResponseType responseType = apollo.getResponseType();
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getApolloDialog(response, apolloImage, commandType)
+                DialogBox.getApolloDialog(response, apolloImage, responseType)
         );
         userInput.clear();
     }
