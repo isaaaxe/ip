@@ -30,7 +30,7 @@ public class Storage {
      * Loads tasks from the storage file.
      *
      * @return the loaded tasks, or an empty list if the file does not exist
-     * @throws IOException if the file cannot be read
+     * @throws IOException if the file cannot be read or contains malformed task data
      */
     public List<Task> load() throws IOException {
         List<Task> tasks = new ArrayList<>();
@@ -38,13 +38,36 @@ public class Storage {
             return tasks;
         }
 
-        for (String line : Files.readAllLines(this.filePath)) {
-            Task task = parseTask(line);
-            if (task != null) {
-                tasks.add(task);
+        List<String> storedLines = Files.readAllLines(this.filePath);
+        for (int i = 0; i < storedLines.size(); i++) {
+            try {
+                Task task = parseTask(storedLines.get(i));
+                if (task != null) {
+                    tasks.add(task);
+                }
+            } catch (RuntimeException e) {
+                throw resetAfterCorruption(i + 1, e);
             }
         }
         return tasks;
+    }
+
+    /**
+     * Clears malformed stored data and creates an exception describing the loading failure.
+     *
+     * @param lineNumber one-based number of the malformed line
+     * @param cause exception encountered while parsing the line
+     * @return exception to report to the application
+     */
+    private IOException resetAfterCorruption(int lineNumber, RuntimeException cause) {
+        String errorMessage = "Corrupted task data at line " + lineNumber + ".";
+        try {
+            Files.write(this.filePath, List.of());
+            return new IOException(errorMessage + " Storage has been reset.", cause);
+        } catch (IOException resetException) {
+            resetException.addSuppressed(cause);
+            return new IOException(errorMessage + " Storage could not be reset.", resetException);
+        }
     }
 
     /**

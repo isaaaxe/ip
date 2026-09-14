@@ -3,6 +3,7 @@ package apollo;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -236,13 +237,21 @@ public class ApolloTest {
     }
 
     @Test
-    public void constructor_malformedStorage_doesNotCrashAndReportsLoadingError() throws IOException {
+    public void constructor_malformedStorage_resetsFileAndReportsLoadingError() throws IOException {
         Path storageFile = tempDir.resolve("tasks.txt");
-        Files.write(storageFile, java.util.List.of("D | broken"));
+        Files.write(storageFile, List.of(
+                "T | 0 | valid task before corruption",
+                "D | broken"));
 
         Apollo apollo = Assertions.assertDoesNotThrow(() -> new Apollo(storageFile.toString()));
 
         Assertions.assertNotNull(apollo.getLoadingError());
+        Assertions.assertTrue(apollo.getLoadingError().contains("line 2"));
+        Assertions.assertTrue(apollo.getLoadingError().contains("Storage has been reset"));
+        Assertions.assertTrue(Files.readAllLines(storageFile).isEmpty());
+
+        Apollo reloadedApollo = new Apollo(storageFile.toString());
+        Assertions.assertNull(reloadedApollo.getLoadingError());
     }
 
     @Test
