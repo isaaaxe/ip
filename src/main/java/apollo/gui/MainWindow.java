@@ -3,6 +3,8 @@ package apollo.gui;
 import apollo.Apollo;
 import apollo.ResponseType;
 import apollo.gui.components.DialogBox;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -10,12 +12,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * Controller for the main GUI.
  */
 public class MainWindow extends AnchorPane {
     private static final String UNDO_AVAILABLE_STYLE_CLASS = "undo-available";
+    private static final Duration EXIT_DELAY = Duration.seconds(5);
     private static final String WELCOME_MESSAGE =
             "The sun rises upon your tasks. Speak, mortal, and let Apollo bring order to your day.";
 
@@ -31,6 +35,8 @@ public class MainWindow extends AnchorPane {
     private Button undoButton;
 
     private Apollo apollo;
+    /** Retains the exit timer until its delayed callback has run. */
+    private final PauseTransition exitDelay = new PauseTransition(EXIT_DELAY);
 
     private Image userImage = new Image(this.getClass().getResourceAsStream("/images/Default_pfp.jpg"));
     private Image apolloImage = new Image(this.getClass().getResourceAsStream("/images/Apollo.jpg"));
@@ -86,6 +92,19 @@ public class MainWindow extends AnchorPane {
                 DialogBox.getApolloDialog(response, apolloImage, responseType)
         );
         updateUndoButtonState();
+        if (responseType == ResponseType.BYE) {
+            scheduleWindowClose();
+        }
+    }
+
+    /** Disables further commands and closes the window after the farewell can be read. */
+    private void scheduleWindowClose() {
+        this.userInput.setDisable(true);
+        this.sendButton.setDisable(true);
+        this.undoButton.setDisable(true);
+
+        this.exitDelay.setOnFinished(event -> Platform.exit());
+        this.exitDelay.playFromStart();
     }
 
     /** Enables and styles the Undo button when the undo history is non-empty. */
