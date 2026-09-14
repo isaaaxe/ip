@@ -17,6 +17,7 @@ public class ParseTest {
         Assertions.assertEquals(Command.LIST, parser.parseCommand("LIST"));
         Assertions.assertEquals(Command.LIST, parser.parseCommand("list"));
         Assertions.assertEquals(Command.LIST, parser.parseCommand("liST"));
+        Assertions.assertEquals(Command.UNDO, parser.parseCommand("undo"));
     }
 
     @Test

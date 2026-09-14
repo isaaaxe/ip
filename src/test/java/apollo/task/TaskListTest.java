@@ -50,6 +50,22 @@ public class TaskListTest {
     }
 
     @Test
+    public void add_atIndex_insertsTaskAtSpecifiedPosition() {
+        TaskList taskList = new TaskList();
+        Todo firstTodo = new Todo("first");
+        Todo restoredTodo = new Todo("restored");
+        Todo lastTodo = new Todo("last");
+        taskList.add(firstTodo, lastTodo);
+
+        taskList.add(1, restoredTodo);
+
+        Assertions.assertEquals(3, taskList.size());
+        Assertions.assertSame(firstTodo, taskList.get(0));
+        Assertions.assertSame(restoredTodo, taskList.get(1));
+        Assertions.assertSame(lastTodo, taskList.get(2));
+    }
+
+    @Test
     public void getDeadlinesDueOn_mixedTasks_returnOnlyMatchingDeadlines() {
         TaskList taskList = new TaskList();
 
