@@ -16,6 +16,8 @@ import javafx.scene.layout.VBox;
  */
 public class MainWindow extends AnchorPane {
     private static final String UNDO_AVAILABLE_STYLE_CLASS = "undo-available";
+    private static final String WELCOME_MESSAGE =
+            "The sun rises upon your tasks. Speak, mortal, and let Apollo bring order to your day.";
 
     @FXML
     private ScrollPane scrollPane;
@@ -41,11 +43,14 @@ public class MainWindow extends AnchorPane {
     /** Injects the Apollo instance used to process commands. */
     public void setApollo(Apollo apollo) {
         this.apollo = apollo;
+        dialogContainer.getChildren().add(
+                DialogBox.getApolloDialog(WELCOME_MESSAGE, apolloImage, ResponseType.DEFAULT));
         if (apollo.getLoadingError() != null) {
             dialogContainer.getChildren().add(
                     DialogBox.getApolloDialog(apollo.getLoadingError(), apolloImage, ResponseType.ERROR));
         }
         updateUndoButtonState();
+        userInput.requestFocus();
     }
 
     /**

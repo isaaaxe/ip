@@ -6,6 +6,7 @@ import apollo.Apollo;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -23,8 +24,10 @@ public class Main extends Application {
             AnchorPane ap = fxmlLoader.load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            stage.setMinHeight(220);
-            stage.setMinWidth(417);
+            stage.setTitle("Apollo — Oracle of Tasks");
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("/images/sun.png")));
+            stage.setMinHeight(480);
+            stage.setMinWidth(420);
             // inject the Apollo instance
             fxmlLoader.<MainWindow>getController().setApollo(apollo);
             stage.show();

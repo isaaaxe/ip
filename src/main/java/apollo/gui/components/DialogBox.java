@@ -39,7 +39,7 @@ public class DialogBox extends HBox {
 
         dialog.setText(text);
         displayPicture.setImage(img);
-        Circle clip = new Circle(30, 30, 30);
+        Circle clip = new Circle(25, 25, 25);
         displayPicture.setClip(clip);
     }
 
@@ -55,7 +55,9 @@ public class DialogBox extends HBox {
     }
 
     public static DialogBox getUserDialog(String text, Image img) {
-        return new DialogBox(text, img);
+        DialogBox dialogBox = new DialogBox(text, img);
+        dialogBox.getStyleClass().add("user-dialog");
+        return dialogBox;
     }
 
     private void changeDialogStyle(ResponseType responseType) {
@@ -72,6 +74,12 @@ public class DialogBox extends HBox {
             case LIST:
                 dialog.getStyleClass().add("list-label");
                 break;
+            case ERROR:
+                dialog.getStyleClass().add("error-label");
+                break;
+            case BYE:
+                dialog.getStyleClass().add("bye-label");
+                break;
             default:
                 // Use the default reply style for all other commands.
         }
@@ -79,6 +87,7 @@ public class DialogBox extends HBox {
 
     public static DialogBox getApolloDialog(String text, Image img, ResponseType responseType) {
         var db = new DialogBox(text, img);
+        db.getStyleClass().add("apollo-dialog");
         db.flip();
         db.changeDialogStyle(responseType);
         return db;
