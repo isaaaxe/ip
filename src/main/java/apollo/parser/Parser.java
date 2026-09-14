@@ -78,11 +78,15 @@ public class Parser {
      * @param input command in the form {@code deadline DESCRIPTION /by DATE_TIME}
      * @return the parsed deadline
      * @throws java.time.format.DateTimeParseException if the date and time is invalid
+     * @throws IllegalArgumentException if the deadline description is empty
      */
     public Deadline parseDeadline(String input) {
         String deadlineArgs = input.substring("deadline".length()).trim();
         int byIndex = deadlineArgs.indexOf("/by");
         String description = deadlineArgs.substring(0, byIndex).trim();
+        if (description.isEmpty()) {
+            throw new IllegalArgumentException("Deadline description cannot be empty");
+        }
         String dateString = deadlineArgs.substring(byIndex + "/by".length()).trim();
         LocalDateTime by = DateParser.parseDateTime(dateString, LocalTime.of(23, 59));
         return new Deadline(description, by);
@@ -94,13 +98,16 @@ public class Parser {
      * @param input command in the form {@code event DESCRIPTION /from DATE_TIME /to DATE_TIME}
      * @return the parsed event
      * @throws java.time.format.DateTimeParseException if either date and time is invalid
-     * @throws IllegalArgumentException if the event ends before it starts
+     * @throws IllegalArgumentException if the description is empty or the event ends before it starts
      */
     public Event parseEvent(String input) {
         String eventArgs = input.substring("event".length()).trim();
         int fromIndex = eventArgs.indexOf("/from");
         int toIndex = eventArgs.indexOf("/to");
         String description = eventArgs.substring(0, fromIndex).trim();
+        if (description.isEmpty()) {
+            throw new IllegalArgumentException("Event description cannot be empty");
+        }
         String fromString = eventArgs.substring(fromIndex + "/from".length(), toIndex).trim();
         String toString = eventArgs.substring(toIndex + "/to".length()).trim();
         LocalDateTime from = DateParser.parseDateTime(fromString, LocalTime.MIDNIGHT);
