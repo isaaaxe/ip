@@ -34,7 +34,7 @@ public class ApolloTest {
         String response = apollo.getResponse("bye");
 
         Assertions.assertTrue(apollo.isExitRequested());
-        Assertions.assertTrue(response.contains("west wind"));
+        Assertions.assertTrue(response.contains("Apollo awaits your return"));
     }
 
     @Test
@@ -93,7 +93,7 @@ public class ApolloTest {
         }
         String emptyHistoryResponse = apollo.getResponse("undo");
 
-        Assertions.assertTrue(emptyHistoryResponse.contains("nothing to undo"));
+        Assertions.assertTrue(emptyHistoryResponse.contains("nothing for Apollo to undo"));
         Assertions.assertEquals(ResponseType.ERROR, apollo.getResponseType());
 
         String listResponse = apollo.getResponse("list");
@@ -112,7 +112,7 @@ public class ApolloTest {
         apollo.getResponse("undo");
         String emptyHistoryResponse = apollo.getResponse("undo");
 
-        Assertions.assertTrue(emptyHistoryResponse.contains("nothing to undo"));
+        Assertions.assertTrue(emptyHistoryResponse.contains("nothing for Apollo to undo"));
     }
 
     @Test
@@ -138,7 +138,7 @@ public class ApolloTest {
         String invalidResponse = apollo.getResponse("delete 99");
         apollo.getResponse("undo");
 
-        Assertions.assertTrue(invalidResponse.contains("valid index"));
+        Assertions.assertTrue(invalidResponse.contains("valid task number"));
         Assertions.assertFalse(apollo.getResponse("list").contains("valid task"));
         Assertions.assertFalse(apollo.canUndo());
     }
@@ -176,7 +176,7 @@ public class ApolloTest {
         Apollo reloadedApollo = new Apollo(storagePath);
 
         Assertions.assertFalse(reloadedApollo.canUndo());
-        Assertions.assertTrue(reloadedApollo.getResponse("undo").contains("nothing to undo"));
+        Assertions.assertTrue(reloadedApollo.getResponse("undo").contains("nothing for Apollo to undo"));
     }
 
     @Test
@@ -202,7 +202,7 @@ public class ApolloTest {
         apollo.getResponse("todo read book");
 
         String noMatchesResponse = apollo.getResponse("find assignment");
-        Assertions.assertEquals("There are no matching tasks.", noMatchesResponse);
+        Assertions.assertEquals("My light reveals no task bearing those words.", noMatchesResponse);
         Assertions.assertEquals(ResponseType.LIST, apollo.getResponseType());
 
         apollo.getResponse("find   ");
@@ -217,12 +217,12 @@ public class ApolloTest {
 
         String addResponse = apollo.getResponse("todo in-memory task");
 
-        Assertions.assertTrue(addResponse.contains("Could not save tasks."));
+        Assertions.assertTrue(addResponse.contains("could not save your tasks"));
         Assertions.assertTrue(apollo.getResponse("list").contains("in-memory task"));
         Assertions.assertTrue(apollo.canUndo());
 
         String undoResponse = apollo.getResponse("undo");
-        Assertions.assertTrue(undoResponse.contains("Could not save tasks."));
+        Assertions.assertTrue(undoResponse.contains("could not save your tasks"));
         Assertions.assertFalse(apollo.getResponse("list").contains("in-memory task"));
     }
 
