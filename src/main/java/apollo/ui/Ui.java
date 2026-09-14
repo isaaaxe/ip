@@ -5,7 +5,8 @@ import java.util.Scanner;
 /** Handles console input and output. */
 public class Ui {
     private static final String GREETING =
-            "Greetings young mortal! Apollo here to answer any queries under the sun!";
+            "Greetings, young mortal! Apollo, lord of light and prophecy, "
+                    + "stands ready to order your tasks beneath the sun.";
 
     private final Scanner scanner;
 

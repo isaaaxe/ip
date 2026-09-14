@@ -25,7 +25,7 @@ public class Apollo {
     private static final String DEFAULT_STORAGE_PATH = "data/apollo.txt";
     private static final int MAX_UNDO_HISTORY = 5;
     private static final String EXIT_MESSAGE =
-            "To the end of the west wind, where fresh flowers bloom.";
+            "Go now beneath the sun's bright path, mortal. Apollo awaits your return.";
 
     private final Storage storage;
     private final Parser parser;
@@ -85,7 +85,7 @@ public class Apollo {
             };
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
-            return "Invalid command given, try again mortal.";
+            return "Even my oracle cannot divine that command, mortal. Try again.";
         }
     }
 
@@ -117,7 +117,7 @@ public class Apollo {
         try {
             this.tasks = new TaskList(this.storage.load());
         } catch (IOException e) {
-            this.loadingError = "Error loading tasks: " + e.getMessage();
+            this.loadingError = "A shadow has fallen across my records: " + e.getMessage();
         }
     }
 
@@ -141,7 +141,7 @@ public class Apollo {
             return appendSavingErrorIfNeeded(formatMarkChange(task));
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
-            return "Give a valid index mortal";
+            return "Name a valid task number, mortal.";
         }
     }
 
@@ -151,7 +151,7 @@ public class Apollo {
             return addTask(this.parser.parseTodo(input));
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
-            return "The description cannot be empty mortal!";
+            return "Even Apollo cannot inscribe a task without a description, mortal.";
         }
     }
 
@@ -161,10 +161,11 @@ public class Apollo {
             return addTask(this.parser.parseEvent(input));
         } catch (DateTimeParseException e) {
             this.responseType = ResponseType.ERROR;
-            return "Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!";
+            return "The stars reject that date. Use d/M/yyyy or d/M/yyyy HHmm, mortal.";
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
-            return "Give me good arguments mortal!";
+            return "The oracle cannot read that event. "
+                    + "Use: event DESCRIPTION /from DATE_TIME /to DATE_TIME.";
         }
     }
 
@@ -174,10 +175,11 @@ public class Apollo {
             return addTask(this.parser.parseDeadline(input));
         } catch (DateTimeParseException e) {
             this.responseType = ResponseType.ERROR;
-            return "Use dates in d/M/yyyy or d/M/yyyy HHmm format, mortal!";
+            return "The stars reject that date. Use d/M/yyyy or d/M/yyyy HHmm, mortal.";
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
-            return "Give me good arguments mortal!";
+            return "The oracle cannot read that deadline. "
+                    + "Use: deadline DESCRIPTION /by DATE_TIME.";
         }
     }
 
@@ -187,7 +189,7 @@ public class Apollo {
             return formatDeadlinesDueOn(this.parser.parseDueDate(input));
         } catch (DateTimeParseException e) {
             this.responseType = ResponseType.ERROR;
-            return "Use a date in d/M/yyyy format, mortal!";
+            return "The oracle requires a date in d/M/yyyy format, mortal.";
         }
     }
 
@@ -198,13 +200,13 @@ public class Apollo {
             Task deletedTask = this.tasks.delete(index);
             recordUndo(() -> this.tasks.add(index, deletedTask));
             String response = String.format(
-                    "Understood young one, I have removed this task:%n%s%n"
-                            + "You now have %d tasks left.",
+                    "So it is decreed. I have cast this task from your list:%n%s%n"
+                            + "%d tasks remain beneath my gaze.",
                     deletedTask, this.tasks.size());
             return appendSavingErrorIfNeeded(response);
         } catch (Exception e) {
             this.responseType = ResponseType.ERROR;
-            return "Give a valid index mortal";
+            return "Name a valid task number, mortal.";
         }
     }
 
@@ -215,7 +217,7 @@ public class Apollo {
             return formatMatchingTasks(this.tasks.find(searchText));
         } catch (IllegalArgumentException e) {
             this.responseType = ResponseType.ERROR;
-            return "There are no matching tasks.";
+            return "Give my light something to seek, mortal.";
         }
     }
 
@@ -227,7 +229,7 @@ public class Apollo {
         this.tasks.add(task);
         recordUndo(() -> this.tasks.delete(addedIndex));
         String response = String.format(
-                "Understood child, adding to your task list:%n%s", task);
+                "Your will is heard, child. I inscribe this task beneath the sun:%n%s", task);
         return appendSavingErrorIfNeeded(response);
     }
 
@@ -235,11 +237,12 @@ public class Apollo {
     private String processUndo() {
         if (this.undoHistory.isEmpty()) {
             this.responseType = ResponseType.ERROR;
-            return "There is nothing to undo, mortal.";
+            return "There is nothing for Apollo to undo, mortal.";
         }
 
         this.undoHistory.pop().run();
-        return appendSavingErrorIfNeeded("Your previous action has been undone, child.");
+        return appendSavingErrorIfNeeded(
+                "The threads of fate turn back; your previous action is undone, child.");
     }
 
     /** Records an inverse operation while retaining only the five newest operations. */
@@ -255,13 +258,13 @@ public class Apollo {
     private String formatMarkChange(Task task) {
         String change = task.getIsDone() ? "marked" : "unmarked";
         return String.format(
-                "Your prayers are heard child, I have %s the specified task:%n%s",
+                "Your prayer is heard, child. I have %s this task:%n%s",
                 change, task);
     }
 
     /** Formats every task with one-based numbering. */
     private String formatTaskList() {
-        StringBuilder response = new StringBuilder("Here are your current tasks child:");
+        StringBuilder response = new StringBuilder("Behold the tasks recorded beneath my light:");
         appendNumberedTasks(response, this.tasks.getTasks());
         return response.toString();
     }
@@ -269,10 +272,10 @@ public class Apollo {
     /** Formats events that are ongoing at the current time. */
     private String formatOngoingEvents() {
         List<Event> events = this.tasks.getEventsOngoingAt(LocalDateTime.now());
-        StringBuilder response = new StringBuilder("Here are your ongoing events, child:");
+        StringBuilder response = new StringBuilder("These events now unfold beneath the sun:");
         appendNumberedTasks(response, events);
         if (events.isEmpty()) {
-            response.append(System.lineSeparator()).append("You have no ongoing events.");
+            response.append(System.lineSeparator()).append("The present hour is free of events.");
         }
         return response.toString();
     }
@@ -281,11 +284,11 @@ public class Apollo {
     private String formatDeadlinesDueOn(LocalDate date) {
         List<Deadline> deadlines = this.tasks.getDeadlinesDueOn(date);
         StringBuilder response = new StringBuilder(String.format(
-                "Here are your deadlines due on %s, child:", date));
+                "The oracle reveals these deadlines for %s:", date));
         appendNumberedTasks(response, deadlines);
         if (deadlines.isEmpty()) {
             response.append(System.lineSeparator())
-                    .append("You have no deadlines due on this date.");
+                    .append("No deadline is written for this date.");
         }
         return response.toString();
     }
@@ -293,10 +296,10 @@ public class Apollo {
     /** Formats tasks whose descriptions match the supplied search text. */
     private String formatMatchingTasks(List<Task> matchingTasks) {
         if (matchingTasks.isEmpty()) {
-            return "There are no matching tasks.";
+            return "My light reveals no task bearing those words.";
         }
 
-        StringBuilder response = new StringBuilder("Here are the matching tasks in your list:");
+        StringBuilder response = new StringBuilder("My light has revealed these matching tasks:");
         appendNumberedTasks(response, matchingTasks);
         return response.toString();
     }
@@ -315,7 +318,8 @@ public class Apollo {
             this.storage.save(this.tasks.getTasks());
             return response;
         } catch (IOException e) {
-            return response + System.lineSeparator() + "Could not save tasks.";
+            return response + System.lineSeparator()
+                    + "A shadow clouds the archive; I could not save your tasks.";
         }
     }
 
