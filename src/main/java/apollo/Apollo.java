@@ -32,7 +32,7 @@ public class Apollo {
     /** Stores inverse operations from newest to oldest for session-only undo. */
     private final Deque<Runnable> undoHistory = new ArrayDeque<>();
     private TaskList tasks;
-    private boolean exitRequested;
+    private boolean isExitRequested;
     private ResponseType responseType = ResponseType.DEFAULT;
     private String loadingError;
 
@@ -96,7 +96,7 @@ public class Apollo {
 
     /** Returns whether the current front-end session has received {@code bye}. */
     public boolean isExitRequested() {
-        return this.exitRequested;
+        return this.isExitRequested;
     }
 
     /**
@@ -123,7 +123,7 @@ public class Apollo {
 
     /** Processes a request to end the current front-end session. */
     private String processBye() {
-        this.exitRequested = true;
+        this.isExitRequested = true;
         return EXIT_MESSAGE;
     }
 
